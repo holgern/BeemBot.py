@@ -129,6 +129,6 @@ class Beem:
                               "%.3f SBD" % (sum_curation[1]),
                               "%.3f SP" % (sum_curation[2]),
                               "%.2f %%" % curation_sum_percentage])
-        response = "curation for %s" % (authorperm)
+        response = "curation for %s\n" % (authorperm)
         response += t.get_string()
         await ctx.channel.send("```" + response + "```")
