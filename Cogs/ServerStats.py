@@ -55,7 +55,8 @@ class ServerStats:
             await ctx.send("I couldn't find that guild...")
             return
         
-        server_embed = discord.Embed(color=ctx.author.color)
+        # server_embed = discord.Embed(color=ctx.author.color)
+        server_embed = discord.Embed()
         server_embed.title = guild.name
         
         # Get localized user time

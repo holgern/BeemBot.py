@@ -758,6 +758,8 @@ class Settings:
 	# Get the requested stat
 	def getServerStat(self, server, stat):
 		# Make sure our server exists in the list
+        if server is None:
+            return None
 		self.checkServer(server)
 		if stat in self.serverDict["Servers"][str(server.id)]:
 			return self.serverDict["Servers"][str(server.id)][stat]
