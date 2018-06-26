@@ -154,114 +154,114 @@ class Settings:
         self.role = RoleManager(bot)
 
         self.defaultServer = { 						# Negates Name and ID - those are added dynamically to each new server
-                                                                               "DefaultRole" 			: "", 		# Auto-assigned role position
-                                                                               "TempRole"				: None,		# Assign a default temporary role
-                                                                               "TempRoleTime"			: 2,		# Number of minutes before temp role expires
-                                                                               "TempRoleList"			: [],		# List of temporary roles
-                                                                                       "TempRolePM"			: False,	# Do we pm when a user is given a temp role?
-                                "DefaultXP"				: 0,		# Default xp given to each new member on join
-                                "DefaultXPReserve"		: 10,		# Default xp reserve given to new members on join
-                                "AdminLock" 			: False, 	# Does the bot *only* answer to admins?
-                                "TableFlipMute"			: False,	# Do we mute people who flip tables?
-                                "IgnoreDeath"			: True,		# Does the bot keep talking post-mortem?
-                                "DJArray"				: [],		# List of roles that can use music
-                                "FilteredWords"			: [],		# List of words to filter out of user messages
-                                "UserRoles"				: [],		# List of roles users can self-select
-                                "UserRoleBlock"			: [],		# List of users blocked from UserRoles
-                                "OnlyOneUserRole"		: True,		# Limits user role selection to one at a time
-                                "YTMultiple"			: False,	# Shows a list of 5 videos per yt search with play
-                                "RequiredXPRole"		: "",		# ID or blank for Everyone
-                                "RequiredLinkRole" 		: "", 		# ID or blank for Admin-Only
-                                "RequiredTagRole" 		: "", 		# ID or blank for Admin-Only
-                                "RequiredHackRole" 		: "", 		# ID or blank for Admin-Only
-                                "RequiredKillRole" 		: "", 		# ID or blank for Admin-Only
-                                "RequiredStopRole"      : "",       # ID or blank for Admin-Only
-                                "TeleChannel"			: "",		# ID or blank for disabled
-                                "TeleConnected"			: False,	# Disconnect any lingering calls
-                                "LastCallHidden"		: False,	# Was the last call with *67?
-                                "TeleNumber"			: None,		# The 7-digit number of the server
-                                "TeleBlock"				: [],		# List of blocked numbers
-                                "MadLibsChannel"        : "",       # ID or blank for any channel
-                                "ChatChannel"			: "", 		# ID or blank for no channel
-                                "HardwareChannel"       : "",		# ID or blank for no channel
-                                "DefaultChannel"		: "",		# ID or blank for no channel
-                                "WelcomeChannel"		: None,		# ID or None for no channel
-                                "LastChat"				: 0,		# UTC Timestamp of last chat message
-                                "PlayingMadLibs"		: False,	# Yes if currently playing MadLibs
-                                "LastAnswer" 			: "",		# URL to last {prefix}question post
-                                "StrikeOut"				: 3,		# Number of strikes needed for consequence
-                                "KickList"				: [],		# List of id's that have been kicked
-                                "BanList"				: [],		# List of id's that have been banned
-                                "Prefix"				: None,		# Custom Prefix
-                                "AutoPCPP"				: None,		# Auto-format pcpartpicker links?
-                                "XP Count"				: 10,		# Default number of xp transactions to log
-                                "XP Array"				: [],		# Holds the xp transaction list
-                                "XPLimit"				: None,		# The maximum xp a member can get
-                                "XPReserveLimit"		: None,		# The maximum xp reserve a member can get
-                                "XpBlockArray"			: [],		# List of roles/users blocked from xp
-                                "HourlyXP" 				: 3,		# How much xp reserve per hour
-                                "HourlyXPReal"			: 0,		# How much xp per hour (typically 0)
-                                "XPPerMessage"			: 0,		# How much xp per message (typically 0)
-                                "XPRPerMessage"			: 0,		# How much xp reserve per message (typically 0)
-                                "RequireOnline" 		: True,		# Must be online for xp?
-                                "AdminUnlimited" 		: True,		# Do admins have unlimited xp to give?
-                                "BotAdminAsAdmin" 		: False,	# Do bot-admins count as admins with xp?
-                                "RemindOffline"			: False,	# Let users know when they ping offline members
-                                "JoinPM"				: True,		# Do we pm new users with rules?
-                                "XPPromote" 			: True,		# Can xp raise your rank?
-                                "XPDemote" 				: False,	# Can xp lower your rank?
-                                "SuppressPromotions"	: False,	# Do we suppress the promotion message?
-                                "SuppressDemotions"		: False,	# Do we suppress the demotion message?
-                                "TotalMessages"			: 0,		# The total number of messages the bot has witnessed
-                                "Killed" 				: False,	# Is the bot dead?
-                                "KilledBy" 				: "",		# Who killed the bot?
-                                "LastShrug"				: "",		# Who shrugged last?
-                                "LastLenny"				: "", 		# Who Lenny'ed last?
-                                "VerificationTime"		: 0,		# Time to wait (in minutes) before assigning default role
-                                "LastPicture" 			: 0,		# UTC Timestamp of last picture uploaded
-                                "PictureThreshold" 		: 10,		# Number of seconds to wait before allowing pictures
-                                "Rules" 				: "Be nice to each other.",
-                                "Welcome"				: "Welcome *[[user]]* to *[[server]]!*",
-                                "Goodbye"				: "Goodbye *[[user]]*, *[[server]]* will miss you!",
-                                "Info"					: "",		# This is where you can say a bit about your server
-                                "PromotionArray" 		: [],		# An array of roles for promotions
-                                "OnlyOneRole"			: False,	# Only allow one role from the promo array at a time
-                                "Hunger" 				: 0,		# The bot's hunger % 0-100 (can also go negative)
-                                "HungerLock" 			: False,	# Will the bot stop answering at 100% hunger?
-                                "SuppressMentions"		: True,		# Will the bot suppress @here and @everyone in its own output?
-                                "Volume"				: "",		# Float volume for music player
-                                "DefaultVolume"			: 0.6,		# Default volume for music player
-                                "Playlisting"			: None,		# Not adding a playlist
-                                "PlaylistRequestor"		: None,		# No one requested a playlist
-                                "IgnoredUsers"			: [],		# List of users that are ignored by the bot
-                                "LastComic"				: [],		# List of julian dates for last comic
-                                "Hacks" 				: [],		# List of hack tips
-                                "Links" 				: [],		# List of links
-                                "Tags"					: [],		# List of tags
-                                "Members" 				: {},		# List of members
-                                "AdminArray"	 		: [],		# List of admin roles
-                                "GifArray"				: [],		# List of roles that can use giphy
-                                "LogChannel"			: "",		# ID or blank for no logging
-                                "LogVars"				: [],		# List of options to log
-                                "DisabledCommands"		: [],		# List of disabled command names
-                                "AdminDisabledAccess"	: True,		# Can admins access disabled commands?
-                                "BAdminDisabledAccess"	: True,		# Can bot-admins access disabled commands?
-                                "DisabledReactions"		: True,		# Does the bot react to disabled commands?
-                                "VoteKickChannel"		: None,		# ID or none if not setup
-                                "VoteKickMention"		: None,		# ID of role to mention - or none for no mention
-                                "VotesToMute"			: 0,		# Positive number - or 0 for disabled
-                                "VotesToMention"		: 0,		# Positive number - or 0 for disabled
-                                "VotesMuteTime"			: 0,		# Number of seconds to mute - or 0 for disabled
-                                "VotesResetTime"		: 0,		# Number of seconds to roll off - or 0 for disabled
-                                "VoteKickArray"			: [],		# Contains a list of users who were voted to kick - and who voted against them
-                                "VoteKickAnon"			: False,	# Are vk messages deleted after sending?
-                                "QuoteReaction"			: None,		# Trigger reaction for quoting messages
-                                "QuoteChannel"			: None,		# Channel id for quotes
-                                "QuoteAdminOnly"		: True,		# Only admins/bot-admins can quote?
-                                "StreamChannel"			: None, 	# None or channel id
-                                "StreamList"			: [],		# List of user id's to watch for
-                                "StreamMessage"			: "Hey everyone! *[[user]]* started streaming *[[game]]!* Check it out here: [[url]]",
-                                "MuteList"				: []}		# List of muted members
+                               "DefaultRole" 		: "", 		# Auto-assigned role position
+                               "TempRole"		: None,		# Assign a default temporary role
+                               "TempRoleTime"		: 2,		# Number of minutes before temp role expires
+                               "TempRoleList"		: [],		# List of temporary roles
+                               "TempRolePM"		: False,	# Do we pm when a user is given a temp role?
+                               "DefaultXP"		: 0,		# Default xp given to each new member on join
+                               "DefaultXPReserve"	: 10,		# Default xp reserve given to new members on join
+                               "AdminLock" 		: False, 	# Does the bot *only* answer to admins?
+                               "TableFlipMute"		: False,	# Do we mute people who flip tables?
+                               "IgnoreDeath"		: True,		# Does the bot keep talking post-mortem?
+                               "DJArray"		: [],		# List of roles that can use music
+                               "FilteredWords"		: [],		# List of words to filter out of user messages
+                               "UserRoles"		: [],		# List of roles users can self-select
+                               "UserRoleBlock"		: [],		# List of users blocked from UserRoles
+                               "OnlyOneUserRole"	: True,		# Limits user role selection to one at a time
+                               "YTMultiple"		: False,	# Shows a list of 5 videos per yt search with play
+                               "RequiredXPRole"		: "",		# ID or blank for Everyone
+                               "RequiredLinkRole" 	: "", 		# ID or blank for Admin-Only
+                               "RequiredTagRole" 	: "", 		# ID or blank for Admin-Only
+                               "RequiredHackRole" 	: "", 		# ID or blank for Admin-Only
+                               "RequiredKillRole" 	: "", 		# ID or blank for Admin-Only
+                               "RequiredStopRole"       : "",       # ID or blank for Admin-Only
+                               "TeleChannel"		: "",		# ID or blank for disabled
+                               "TeleConnected"		: False,	# Disconnect any lingering calls
+                               "LastCallHidden"		: False,	# Was the last call with *67?
+                               "TeleNumber"		: None,		# The 7-digit number of the server
+                               "TeleBlock"		: [],		# List of blocked numbers
+                               "MadLibsChannel"         : "",       # ID or blank for any channel
+                               "ChatChannel"		: "", 		# ID or blank for no channel
+                               "HardwareChannel"        : "",		# ID or blank for no channel
+                               "DefaultChannel"		: "",		# ID or blank for no channel
+                               "WelcomeChannel"		: None,		# ID or None for no channel
+                               "LastChat"		: 0,		# UTC Timestamp of last chat message
+                               "PlayingMadLibs"		: False,	# Yes if currently playing MadLibs
+                               "LastAnswer" 		: "",		# URL to last {prefix}question post
+                               "StrikeOut"		: 3,		# Number of strikes needed for consequence
+                               "KickList"		: [],		# List of id's that have been kicked
+                               "BanList"		: [],		# List of id's that have been banned
+                               "Prefix"			: None,		# Custom Prefix
+                               "AutoPCPP"		: None,		# Auto-format pcpartpicker links?
+                               "XP Count"		: 10,		# Default number of xp transactions to log
+                               "XP Array"		: [],		# Holds the xp transaction list
+                               "XPLimit"		: None,		# The maximum xp a member can get
+                               "XPReserveLimit"		: None,		# The maximum xp reserve a member can get
+                               "XpBlockArray"		: [],		# List of roles/users blocked from xp
+                               "HourlyXP" 		: 3,		# How much xp reserve per hour
+                               "HourlyXPReal"		: 0,		# How much xp per hour (typically 0)
+                               "XPPerMessage"		: 0,		# How much xp per message (typically 0)
+                               "XPRPerMessage"		: 0,		# How much xp reserve per message (typically 0)
+                               "RequireOnline" 		: True,		# Must be online for xp?
+                               "AdminUnlimited" 	: True,		# Do admins have unlimited xp to give?
+                               "BotAdminAsAdmin" 	: False,	# Do bot-admins count as admins with xp?
+                               "RemindOffline"		: False,	# Let users know when they ping offline members
+                               "JoinPM"			: True,		# Do we pm new users with rules?
+                               "XPPromote" 		: True,		# Can xp raise your rank?
+                               "XPDemote" 		: False,	# Can xp lower your rank?
+                               "SuppressPromotions"	: False,	# Do we suppress the promotion message?
+                               "SuppressDemotions"	: False,	# Do we suppress the demotion message?
+                               "TotalMessages"		: 0,		# The total number of messages the bot has witnessed
+                               "Killed" 		: False,	# Is the bot dead?
+                               "KilledBy" 		: "",		# Who killed the bot?
+                               "LastShrug"		: "",		# Who shrugged last?
+                               "LastLenny"		: "", 		# Who Lenny'ed last?
+                               "VerificationTime"	: 0,		# Time to wait (in minutes) before assigning default role
+                               "LastPicture" 		: 0,		# UTC Timestamp of last picture uploaded
+                               "PictureThreshold" 	: 10,		# Number of seconds to wait before allowing pictures
+                               "Rules" 			: "Be nice to each other.",
+                               "Welcome"		: "Welcome *[[user]]* to *[[server]]!*",
+                               "Goodbye"		: "Goodbye *[[user]]*, *[[server]]* will miss you!",
+                               "Info"			: "",		# This is where you can say a bit about your server
+                               "PromotionArray" 	: [],		# An array of roles for promotions
+                               "OnlyOneRole"		: False,	# Only allow one role from the promo array at a time
+                               "Hunger" 		: 0,		# The bot's hunger % 0-100 (can also go negative)
+                               "HungerLock" 		: False,	# Will the bot stop answering at 100% hunger?
+                               "SuppressMentions"	: True,		# Will the bot suppress @here and @everyone in its own output?
+                               "Volume"			: "",		# Float volume for music player
+                               "DefaultVolume"		: 0.6,		# Default volume for music player
+                               "Playlisting"		: None,		# Not adding a playlist
+                               "PlaylistRequestor"	: None,		# No one requested a playlist
+                               "IgnoredUsers"		: [],		# List of users that are ignored by the bot
+                               "LastComic"		: [],		# List of julian dates for last comic
+                               "Hacks" 			: [],		# List of hack tips
+                               "Links" 			: [],		# List of links
+                               "Tags"			: [],		# List of tags
+                               "Members" 		: {},		# List of members
+                               "AdminArray"	 	: [],		# List of admin roles
+                               "GifArray"		: [],		# List of roles that can use giphy
+                               "LogChannel"		: "",		# ID or blank for no logging
+                               "LogVars"		: [],		# List of options to log
+                               "DisabledCommands"	: [],		# List of disabled command names
+                               "AdminDisabledAccess"	: True,		# Can admins access disabled commands?
+                               "BAdminDisabledAccess"	: True,		# Can bot-admins access disabled commands?
+                               "DisabledReactions"	: True,		# Does the bot react to disabled commands?
+                               "VoteKickChannel"	: None,		# ID or none if not setup
+                               "VoteKickMention"	: None,		# ID of role to mention - or none for no mention
+                               "VotesToMute"		: 0,		# Positive number - or 0 for disabled
+                               "VotesToMention"		: 0,		# Positive number - or 0 for disabled
+                               "VotesMuteTime"		: 0,		# Number of seconds to mute - or 0 for disabled
+                               "VotesResetTime"		: 0,		# Number of seconds to roll off - or 0 for disabled
+                               "VoteKickArray"		: [],		# Contains a list of users who were voted to kick - and who voted against them
+                               "VoteKickAnon"		: False,	# Are vk messages deleted after sending?
+                               "QuoteReaction"		: None,		# Trigger reaction for quoting messages
+                               "QuoteChannel"		: None,		# Channel id for quotes
+                               "QuoteAdminOnly"		: True,		# Only admins/bot-admins can quote?
+                               "StreamChannel"		: None, 	# None or channel id
+                               "StreamList"		: [],		# List of user id's to watch for
+                               "StreamMessage"		: "Hey everyone! *[[user]]* started streaming *[[game]]!* Check it out here: [[url]]",
+                               "MuteList"		: []}		# List of muted members
                 # Removed for spam
                 # "ChannelMOTD" 			: {}}		# List of channel messages of the day
 
@@ -659,8 +659,8 @@ class Settings:
                         "Parts"			: "",
                         "Muted"			: False,
                         "LastOnline"	: "Unknown",
-                                    "Reminders"		: [],
-                                                "Profiles"		: [] }
+                        "Reminders"		: [],
+                        "Profiles"		: [] }
             if not newUser["XP"]:
                 newUser["XP"] = 0
             if not newUser["XPReserve"]:
@@ -754,17 +754,15 @@ class Settings:
             self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)][stat] = incrementAmount
         return self.getUserStat(user, server, stat)
 
-
     # Get the requested stat
     def getServerStat(self, server, stat):
         # Make sure our server exists in the list
-    if server is None:
-        return None
-            self.checkServer(server)
-            if stat in self.serverDict["Servers"][str(server.id)]:
-                return self.serverDict["Servers"][str(server.id)][stat]
+        if server is None:
             return None
-
+        self.checkServer(server)
+        if stat in self.serverDict["Servers"][str(server.id)]:
+            return self.serverDict["Servers"][str(server.id)][stat]
+        return None
 
     # Set the provided stat
     def setServerStat(self, server, stat, value):
