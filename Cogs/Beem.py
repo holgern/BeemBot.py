@@ -39,7 +39,7 @@ class Beem:
         await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
-    async def updatenodes(self, ctx, *):
+    async def updatenodes(self, ctx):
         """Retuns information about the current node"""
         t = PrettyTable(["node", "Version", "score"])
         t.align = "l"
