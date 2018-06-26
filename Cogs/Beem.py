@@ -91,15 +91,12 @@ class Beem:
 
         voter = [""]
         voter2 = [""]
-        found_voter = False
         for row in sortedList:
             if show_all_voter:
                 if not all_posts:
                     voter = [row[0]]
                 if all_posts:
                     new_row[0] = "%d. %s" % (index, comment.author)
-                if not found_voter:
-                    found_voter = True
                 t.add_row(new_row + voter + ["%.1f min" % row[1],
                                              "%.3f SBD" % float(row[2]),
                                              "%.3f SBD" % float(row[3]),
@@ -107,32 +104,31 @@ class Beem:
                                              "%.1f %%" % (row[5])])
                 
                 new_row = new_row2
-        if found_voter:
-            t.add_row(new_row2 + voter2 + ["", "", "", "", ""])
-            if sum_curation[0] > 0:
-                curation_sum_percentage = sum_curation[3] / sum_curation[0] * 100
-            else:
-                curation_sum_percentage = 0
-            sum_line = new_row2 + voter2
-            sum_line[-1] = "High. vote"
+        t.add_row(new_row2 + voter2 + ["", "", "", "", ""])
+        if sum_curation[0] > 0:
+            curation_sum_percentage = sum_curation[3] / sum_curation[0] * 100
+        else:
+            curation_sum_percentage = 0
+        sum_line = new_row2 + voter2
+        sum_line[-1] = "High. vote"
 
-            t.add_row(sum_line + ["%.1f min" % highest_vote[1],
-                                  "%.3f SBD" % float(highest_vote[2]),
-                                  "%.3f SBD" % float(highest_vote[3]),
-                                  "%.3f SP" % (highest_vote[4]),
-                                  "%.1f %%" % (highest_vote[5])])
-            sum_line[-1] = "High. Cur."
-            t.add_row(sum_line + ["%.1f min" % max_curation[1],
-                                  "%.3f SBD" % float(max_curation[2]),
-                                  "%.3f SBD" % float(max_curation[3]),
-                                  "%.3f SP" % (max_curation[4]),
-                                  "%.1f %%" % (max_curation[5])])
-            sum_line[-1] = "Sum"
-            t.add_row(sum_line + ["-",
-                                  "%.3f SBD" % (sum_curation[0]),
-                                  "%.3f SBD" % (sum_curation[1]),
-                                  "%.3f SP" % (sum_curation[2]),
-                                  "%.2f %%" % curation_sum_percentage])
+        t.add_row(sum_line + ["%.1f min" % highest_vote[1],
+                              "%.3f SBD" % float(highest_vote[2]),
+                              "%.3f SBD" % float(highest_vote[3]),
+                              "%.3f SP" % (highest_vote[4]),
+                              "%.1f %%" % (highest_vote[5])])
+        sum_line[-1] = "High. Cur."
+        t.add_row(sum_line + ["%.1f min" % max_curation[1],
+                              "%.3f SBD" % float(max_curation[2]),
+                              "%.3f SBD" % float(max_curation[3]),
+                              "%.3f SP" % (max_curation[4]),
+                              "%.1f %%" % (max_curation[5])])
+        sum_line[-1] = "Sum"
+        t.add_row(sum_line + ["-",
+                              "%.3f SBD" % (sum_curation[0]),
+                              "%.3f SBD" % (sum_curation[1]),
+                              "%.3f SP" % (sum_curation[2]),
+                              "%.2f %%" % curation_sum_percentage])
         response = "curation for %s" % (authorperm)
         response += t.get_string()
         await ctx.channel.send("```" + response + "```")
