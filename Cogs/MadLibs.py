@@ -9,6 +9,11 @@ from   Cogs import Settings
 from   Cogs import DisplayName
 from   Cogs import Nullify
 
+def setup(bot):
+	# Add the bot and deps
+	settings = bot.get_cog("Settings")
+	bot.add_cog(MadLibs(bot, settings))
+
 class MadLibs:
 
 	# Init with the bot reference, and a reference to the settings var
@@ -21,11 +26,18 @@ class MadLibs:
 		self.prefix = "ml"
 		self.leavePrefix = "mleave"
 
-	async def onready(self):
-		# Clear all pending madlibs
-		for server in self.bot.servers:
-			self.settings.setServerStat(server, "PlayingMadLibs", None)
-			
+	# Proof of concept stuff for reloading cog/extension
+	def _is_submodule(self, parent, child):
+		return parent == child or child.startswith(parent + ".")
+
+	@asyncio.coroutine
+	async def on_loaded_extension(self, ext):
+		# See if we were loaded
+		if not self._is_submodule(ext.__name__, self.__module__):
+			return
+		# Clear any previous games
+		for guild in self.bot.guilds:
+			self.settings.setServerStat(guild, "PlayingMadLibs", False)
 
 	@commands.command(pass_context=True)
 	async def madlibs(self, ctx):
@@ -33,10 +45,10 @@ class MadLibs:
 
 		channel = ctx.message.channel
 		author  = ctx.message.author
-		server  = ctx.message.server
+		server  = ctx.message.guild
 
 		# Check if we're suppressing @here and @everyone mentions
-		if self.settings.getServerStat(ctx.message.server, "SuppressMentions").lower() == "yes":
+		if self.settings.getServerStat(ctx.message.guild, "SuppressMentions"):
 			suppress = True
 		else:
 			suppress = False
@@ -45,18 +57,18 @@ class MadLibs:
 		channelID = self.settings.getServerStat(server, "MadLibsChannel")
 		if not (not channelID or channelID == ""):
 			# We need the channel id
-			if not channelID == channel.id:
+			if not str(channelID) == str(channel.id):
 				msg = 'This isn\'t the channel for that...'
 				for chan in server.channels:
-					if chan.id == channelID:
+					if str(chan.id) == str(channelID):
 						msg = 'This isn\'t the channel for that.  Take the MadLibs to the **{}** channel.'.format(chan.name)
-				await self.bot.send_message(channel, msg)
+				await channel.send(msg)
 				return
 
 		# Check if our folder exists
 		if not os.path.isdir("./Cogs/MadLibs"):
 			msg = 'I\'m not configured for MadLibs yet...'
-			await self.bot.send_message(channel, msg)
+			await channel.send(msg)
 			return
 
 		# Folder exists - let's see if it has any files
@@ -68,16 +80,16 @@ class MadLibs:
 		if len(choices) == 0:
 			# No madlibs...
 			msg = 'I\'m not configured for MadLibs yet...'
-			await self.bot.send_message(channel, msg)
+			await channel.send(msg)
 			return
 		
 		# Check if we're already in a game
 		if self.settings.getServerStat(server, "PlayingMadLibs"):
 			msg = 'I\'m already playing MadLibs - use `{}{} [your word]` to submit answers.'.format(ctx.prefix, self.prefix)
-			await self.bot.send_message(channel, msg)
+			await channel.send(msg)
 			return
 		
-		self.settings.setServerStat(server, "PlayingMadLibs", "Yes")
+		self.settings.setServerStat(server, "PlayingMadLibs", True)
 
 		# Get a random madlib from those available
 		randnum = random.randint(0, (len(choices)-1))
@@ -104,43 +116,51 @@ class MadLibs:
 		i = 0
 		while i < len(words):
 			# Ask for the next word
-			msg = "I need a/an **{}** (word *{}/{}*).  `{}{} [your word]`".format(words[i][2:-2], str(i+1), str(len(words)), ctx.prefix, self.prefix)
-			await self.bot.send_message(channel, msg)
+			vowels = "aeiou"
+			word = words[i][2:-2]
+			if word[:1].lower() in vowels:
+				msg = "I need an **{}** (word *{}/{}*).  `{}{} [your word]`".format(words[i][2:-2], str(i+1), str(len(words)), ctx.prefix, self.prefix)
+			else:
+				msg = "I need a **{}** (word *{}/{}*).  `{}{} [your word]`".format(words[i][2:-2], str(i+1), str(len(words)), ctx.prefix, self.prefix)
+			await channel.send(msg)
 
 			# Setup the check
 			def check(msg):	
-				return msg.content.startswith("{}{}".format(ctx.prefix.lower(), self.prefix.lower()))
+				return msg.content.startswith("{}{}".format(ctx.prefix, self.prefix)) and msg.channel == channel
 
 			# Wait for a response
-			talk = await self.bot.wait_for_message(channel=channel, check=check, timeout=60)
+			try:
+				talk = await self.bot.wait_for('message', check=check, timeout=60)
+			except Exception:
+				talk = None
 
 			if not talk:
 				# We timed out - leave the loop
 				msg = "*{}*, I'm done waiting... we'll play another time.".format(DisplayName.name(author))
-				await self.bot.send_message(channel, msg)
-				self.settings.setServerStat(server, "PlayingMadLibs", None)
+				await channel.send(msg)
+				self.settings.setServerStat(server, "PlayingMadLibs", False)
 				return
 
 			# Check if the message is to leave
-			if talk.content.startswith('{}{}'.format(ctx.prefix.lower(), self.leavePrefix.lower())):
+			if talk.content.lower().startswith('{}{}'.format(ctx.prefix, self.leavePrefix.lower())):
 				if talk.author is author:
 					msg = "Alright, *{}*.  We'll play another time.".format(DisplayName.name(author))
-					await self.bot.send_message(channel, msg)
-					self.settings.setServerStat(server, "PlayingMadLibs", None)
+					await channel.send(msg)
+					self.settings.setServerStat(server, "PlayingMadLibs", False)
 					return
 				else:
 					# Not the originator
 					msg = "Only the originator (*{}*) can leave the MadLibs.".format(DisplayName.name(author))
-					await self.bot.send_message(channel, msg)
+					await channel.send(msg)
 					continue
 
 			# We got a relevant message
 			word = talk.content
 			# Let's remove the $ml prefix (with or without space)
 			if word.startswith('{}{} '.format(ctx.prefix.lower(), self.prefix.lower())):
-				word = word[4:]
+				word = word[len(ctx.prefix)+len(self.prefix)+1:]
 			if word.startswith('{}{}'.format(ctx.prefix.lower(), self.prefix.lower())):
-				word = word[3:]
+				word = word[len(ctx.prefix)+len(self.prefix):]
 			
 			# Check capitalization
 			if words[i][:3].isupper():
@@ -157,17 +177,17 @@ class MadLibs:
 			# Only replace the first occurence
 			data = re.sub(self.regex, "**{}**".format(asub), data, 1)
 
-		self.settings.setServerStat(server, "PlayingMadLibs", None)
+		self.settings.setServerStat(server, "PlayingMadLibs", False)
 		
 		# Check for suppress
 		if suppress:
 			data = Nullify.clean(data)
 		# Message the output
-		await self.bot.send_message(channel, data)
+		await channel.send(data)
 
 	@madlibs.error
 	async def madlibs_error(self, ctx, error):
 		# Reset playing status and display error
-		self.settings.setServerStat(server, "PlayingMadLibs", None)
+		self.settings.setServerStat(error.channel.guild, "PlayingMadLibs", False)
 		msg = 'madlibs Error: {}'.format(ctx)
-		await self.bot.say(msg)
+		await error.send(msg)

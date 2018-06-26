@@ -5,14 +5,35 @@ shopt -s nocasematch
 # turn on extended globbing
 shopt -s extglob
 
+py_path="python3"
+bot="WatchDog.py"
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-gitupdate="Yes"
-autorestart="Yes"
+function check_py () {
+    if [ -x "$(command -v python3)" ]; then
+        py_path="$(which python3)"
+    else
+        if [ -x "$(command -v python)" ]; then
+            py_path="$(which python)"
+        else
+            echo
+            exit 1
+        fi
+    fi
+    echo $py_path
+}
 
 function main () {
     echo \#\#\# Starting CorpBot \#\#\#
     cd "$DIR"
+    py_path="$(check_py)"
+    if [[ "$py_path" == "" ]]; then
+        echo
+        echo "Python is not installed!"
+        echo
+        exit 1
+    fi
     runBot
 }
 
@@ -22,25 +43,8 @@ function runBot () {
         update
     fi
     echo
-    python3 Main.py
+    "$py_path" "$bot"
     echo
-    echo "$(timestamp): CorpBot died."
-    echo "Restarting in 10 seconds..."
-    sleep 10
-    if [[ "$autorestart" == "Yes" ]]; then
-        runBot
-    fi
-}
-
-function update () {
-    echo "Updating..."
-    echo
-    git pull
-}
-
-# Define a timestamp function
-function timestamp () {
-    date +"%T"
 }
 
 main

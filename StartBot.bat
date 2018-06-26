@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 cls
 echo   ###                ###
@@ -6,10 +7,15 @@ echo  # CorpBot - CorpNewt #
 echo ###                ###
 echo.
 
-set "botFile=Main.py"
+set "botFile=WatchDog.py"
 set "pyPath=python"
-set "autoRestart=Yes"
-set "update=Yes"
+
+for /f "tokens=*" %%i in ('where python 2^>nul') do (
+    set "p=%%i"
+    if /i NOT "!p:~0,5!"=="INFO:" (
+        set "pyPath=%%i"
+    )
+)
 
 set "thisDir=%~dp0"
 
@@ -28,9 +34,7 @@ goto :EOF
 if /i "%update%" == "Yes" (
     call :update
 )
+
 "%pyPath%" "%botFile%"
-if /i "%autoRestart%"=="Yes" (
-    timeout 10
-    goto start
-)
-pause
+
+pause > nul

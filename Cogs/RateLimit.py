@@ -5,6 +5,11 @@ import time
 from   datetime import datetime
 from   discord.ext import commands
 
+def setup(bot):
+	# Add the bot and deps
+	settings = bot.get_cog("Settings")
+	bot.add_cog(RateLimit(bot, settings))
+
 # This is the RateLimit module. It keeps users from being able to spam commands
 
 class RateLimit:
@@ -23,6 +28,10 @@ class RateLimit:
 			return True
 		else:
 			return False
+		
+	async def test_message(self, message):
+		# Implemented to bypass having this called twice
+		return { "Ignore" : False, "Delete" : False }
 
 	async def message(self, message):
 		# Check the message and see if we should allow it - always yes.
@@ -36,16 +45,23 @@ class RateLimit:
 			currDelay = self.commandCooldown
 		
 		# Check if we can run commands
-		lastTime = int(self.settings.getUserStat(message.author, message.server, "LastCommand"))
+		try:
+			lastTime = int(self.settings.getUserStat(message.author, message.guild, "LastCommand"))
+		except:
+			# Not set - or incorrectly set - default to 0
+			lastTime = 0
+		# None fix
+		if lastTime == None:
+			lastTime = 0
 		if not self.canRun( lastTime, currDelay ):
 			# We can't run commands yet - ignore
 			ignore = True
 		
 		return { 'Ignore' : ignore, 'Delete' : False }
 		
-	async def oncommand(self, command, ctx):
+	async def oncommand(self, ctx):
 		# Let's grab the user who had a completed command - and set the timestamp
-		self.settings.setUserStat(ctx.message.author, ctx.message.server, "LastCommand", int(time.time()))
+		self.settings.setUserStat(ctx.message.author, ctx.message.guild, "LastCommand", int(time.time()))
 
 
 	@commands.command(pass_context=True)
@@ -54,59 +70,51 @@ class RateLimit:
 		
 		channel = ctx.message.channel
 		author  = ctx.message.author
-		server  = ctx.message.server
+		server  = ctx.message.guild
 
-		# Only allow owner to change server stats
-		serverDict = self.settings.serverDict
-
-		try:
-			owner = serverDict['Owner']
-		except KeyError:
-			owner = None
-
-		if owner == None:
-			# No owner set
+		# Only allow owner
+		isOwner = self.settings.isOwner(ctx.author)
+		if isOwner == None:
 			msg = 'I have not been claimed, *yet*.'
-			await self.bot.send_message(channel, msg)
+			await ctx.channel.send(msg)
 			return
-		else:
-			if not author.id == owner:
-				msg = 'You are not the *true* owner of me.  Only the rightful owner can use this command.'
-				await self.bot.send_message(channel, msg)
-				return
+		elif isOwner == False:
+			msg = 'You are not the *true* owner of me.  Only the rightful owner can use this command.'
+			await ctx.channel.send(msg)
+			return
 
 		# Get current delay
 		try:
-			currDelay = serverDict['CommandCooldown']
+			currDelay = self.settings.serverDict['CommandCooldown']
 		except KeyError:
 			currDelay = self.commandCooldown
 		
 		if delay == None:
 			if currDelay == 1:
-				await self.bot.send_message(ctx.message.channel, 'Current command cooldown is *1 second.*')
+				await ctx.channel.send('Current command cooldown is *1 second.*')
 			else:
-				await self.bot.send_message(ctx.message.channel, 'Current command cooldown is *{} seconds.*'.format(currDelay))
+				await ctx.channel.send('Current command cooldown is *{} seconds.*'.format(currDelay))
 			return
 		
 		try:
 			delay = int(delay)
 		except Exception:
-			await self.bot.send_message(ctx.message.channel, 'Cooldown must be an int.')
+			await ctx.channel.send('Cooldown must be an int.')
 			return
 		
 		if delay < 0:
-			await self.bot.send_message(ctx.message.channel, 'Cooldown must be at least *0 seconds*.')
+			await ctx.channel.send('Cooldown must be at least *0 seconds*.')
 			return
 
 		if delay > self.maxCooldown:
 			if self.maxCooldown == 1:
-				await self.bot.send_message(ctx.message.channel, 'Cooldown cannot be more than *1 second*.')
+				await ctx.channel.send('Cooldown cannot be more than *1 second*.')
 			else:
-				await self.bot.send_message(ctx.message.channel, 'Cooldown cannot be more than *{} seconds*.'.format(self.maxCooldown))
+				await ctx.channel.send('Cooldown cannot be more than *{} seconds*.'.format(self.maxCooldown))
 			return
 		
-		serverDict['CommandCooldown'] = delay
+		self.settings.serverDict['CommandCooldown'] = delay
 		if delay == 1:
-			await self.bot.send_message(ctx.message.channel, 'Current command cooldown is now *1 second.*')
+			await ctx.channel.send('Current command cooldown is now *1 second.*')
 		else:
-			await self.bot.send_message(ctx.message.channel, 'Current command cooldown is now *{} seconds.*'.format(delay))
+			await ctx.channel.send('Current command cooldown is now *{} seconds.*'.format(delay))

@@ -1,6 +1,45 @@
 import asyncio
 import discord
+import re
 from   discord.ext import commands
+from   Cogs import Nullify
+
+def setup(bot):
+	# This module isn't actually a cog
+    return
+
+def clean_message(message, *, bot = None, server = None, nullify = True):
+    # Searches for <@ > and <!@ > and gets the ids between
+    # then resolves them to their user name if it can be determined
+    
+    if nullify:
+        # Strip out @here and @everyone first
+        zerospace = "​"
+        message = message.replace("@everyone", "@{}everyone".format(zerospace)).replace("@here", "@{}here".format(zerospace))
+    if bot == None and server == None:
+        # Not enough info
+        return message
+    matches_re = re.finditer(r"\<!?\@[^\<\@]+\>", message)
+    matches = []
+    matches = [x.group(0) for x in matches_re]
+    if not len(matches):
+        return message
+    for match in matches:
+        if server:
+            # Have the server, bot doesn't matter
+            mem = memberForName(match, server)
+            if mem == None:
+                continue
+            mem_name = name(mem)
+        else:
+            # Must have bot then
+            memID = re.sub(r'\W+', '', match)
+            mem = bot.get_user(int(memID))
+            if mem == None:
+                continue
+            mem_name = mem.name
+        message = message.replace(match, mem_name)
+    return message
 
 def name(member : discord.Member):
     # A helper function to return the member's display name
@@ -14,19 +53,24 @@ def name(member : discord.Member):
     except AttributeError:
         pass
     if nick:
-        return nick
+        return Nullify.clean(nick)
     if name:
-        return name
+        return Nullify.clean(name)
     return None
 
-def memberForID(id, server):
+def memberForID(checkid, server):
+    try:
+        checkid = int(checkid)
+    except:
+        return None
     for member in server.members:
-        if member.id == id:
+        if member.id == checkid:
             return member
     return None
 
 def memberForName(name, server):
     # Check nick first - then name
+    name = str(name)
     for member in server.members:
         if member.nick:
             if member.nick.lower() == name.lower():
@@ -34,20 +78,71 @@ def memberForName(name, server):
     for member in server.members:
         if member.name.lower() == name.lower():
             return member
-    # No member yet - try ID
-    memID = ''.join(list(filter(str.isdigit, name)))
-    newMem = memberForID(memID, server)
-    if newMem:
-        return newMem
+    mem_parts = name.split("#")
+    if len(mem_parts) == 2:
+        # We likely have a name#descriminator
+        try:
+            mem_name = mem_parts[0]
+            mem_disc = int(mem_parts[1])
+        except:
+            mem_name = mem_disc = None
+        if mem_name:
+            for member in server.members:
+                if member.name.lower() == mem_name.lower() and int(member.discriminator) == mem_disc:
+                    return member
+    mem_id = re.sub(r'\W+', '', name)
+    new_mem = memberForID(mem_id, server)
+    if new_mem:
+        return new_mem
+    
     return None
 
-def roleForID(id, server):
+def channelForID(checkid, server, typeCheck = None):
+    try:
+        checkid = int(checkid)
+    except:
+        return None
+    for channel in server.channels:
+        if typeCheck:
+            if typeCheck.lower() == "text" and not type(channel) is discord.TextChannel:
+                continue
+            if typeCheck.lower() == "voice" and not type(channel) is discord.VoiceChannel:
+                continue
+        if channel.id == checkid:
+            return channel
+    return None
+
+def channelForName(name, server, typeCheck = None):
+    name = str(name)
+    for channel in server.channels:
+        if typeCheck:
+            if typeCheck.lower() == "text" and not type(channel) is discord.TextChannel:
+                continue
+            if typeCheck.lower() == "voice" and not type(channel) is discord.VoiceChannel:
+                continue
+        if channel.name.lower() == name.lower():
+            return channel
+    chanID = re.sub(r'\W+', '', name)
+    newChan = channelForID(chanID, server, typeCheck)
+    if newChan:
+        return newChan
+    return None
+
+def roleForID(checkid, server):
+    try:
+        checkid = int(checkid)
+    except:
+        return None
     for role in server.roles:
-        if role.id == id:
+        if role.id == checkid:
             return role
     return None
 
 def roleForName(name, server):
+    name = str(name)
+    # Adjust for "everyone"
+    if name.lower() == "everyone":
+        name = "@everyone"
     for role in server.roles:
         if role.name.lower() == name.lower():
             return role
@@ -65,6 +160,7 @@ def serverNick(user, server):
     return None
 
 def checkNameForInt(name, server):
+    name = str(name)
     theList = name.split()
     # We see if we have multiple parts split by a space
     if len(theList)<2:
@@ -124,6 +220,7 @@ def checkNameForInt(name, server):
     return None
 
 def checkRoleForInt(name, server):
+    name = str(name)
     theList = name.split()
     # We see if we have multiple parts split by a space
     if len(theList)<2:

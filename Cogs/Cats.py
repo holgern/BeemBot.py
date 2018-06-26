@@ -1,17 +1,19 @@
 import asyncio
 import discord
 import random
-import requests
 import time
 from   os.path import splitext
 from   discord.ext import commands
 from   Cogs import Settings
 from   Cogs import GetImage
+from   Cogs import DL
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+def setup(bot):
+	# Currently the api is broken - picked up in the Reddit cog
+	return
+	# Add the bot and deps
+	settings = bot.get_cog("Settings")
+	bot.add_cog(Cats(bot, settings))
 
 # This module grabs Reddit posts and selects one at random
 
@@ -44,7 +46,7 @@ class Cats:
 		
 		channel = ctx.message.channel
 		author  = ctx.message.author
-		server  = ctx.message.server
+		server  = ctx.message.guild
 		
 		if not self.canDisplay(server):
 			return
@@ -52,8 +54,11 @@ class Cats:
 		url = 'http://random.cat/meow'
 
 		# Grab our image url
-		r = requests.get(url, headers = {'User-agent': self.ua})
+		r = await DL.async_json(url, headers = {'User-agent': self.ua})
+		if not r:
+			await ctx.send("Hmmm - something went wrong...")
+			return
 
-		catURL = r.json()['file']
+		catURL = r['file']
 		
-		await GetImage.get(catURL, self.bot, channel, 'A cat for you!', self.ua)
+		await GetImage.get(ctx, catURL.replace("\\", ""), 'A cat for you!', self.ua)

@@ -2,6 +2,13 @@ import asyncio
 import discord
 from   discord.ext import commands
 
+def setup(bot):
+	# Disabled for now
+	return
+	# Add the bot and deps
+	settings = bot.get_cog("Settings")
+	bot.add_cog(Monitor(bot, settings))
+
 # This is the Monitor module. It keeps track of how many messages fail
 
 class Monitor:
@@ -26,7 +33,7 @@ class Monitor:
 		if checked > 1 and float(passed/checked) < self.threshold:
 			# We checked at least one command - and are below threshold
 			print('Command success below threshold - rebooting...')
-			self.settings.flushSettings()
+			self.settings.flushSettings(self.settings.file, True)
 			# Logout, stop the event loop, close the loop, quit
 			for task in asyncio.Task.all_tasks():
 				try:

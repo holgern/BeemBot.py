@@ -1,20 +1,24 @@
 import asyncio
+import aiohttp
 import discord
 from   discord.ext import commands
 import json
 import os
 import tempfile
 import shutil
-import urllib.request
-import urllib
-import requests
 import time
 from   os.path     import splitext
 from   PIL         import Image
+from   Cogs        import DL
+from   Cogs        import Message
 try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
+
+def setup(bot):
+	# This module isn't actually a cog
+    return
 
 # A helper module for images.
 
@@ -32,49 +36,36 @@ def canDisplay( firstTime, threshold ):
 	else:
 		return False
 
-def download(url, ext : str = "jpg", sizeLimit : int = 8000000, ua : str = 'CorpNewt DeepThoughtBot'):
+async def download(url, ext : str = "jpg", sizeLimit : int = 8000000, ua : str = 'CorpNewt DeepThoughtBot'):
 	"""Download the passed URL and return the file path."""
+	url = url.strip("<>")
 	# Set up a temp directory
 	dirpath = tempfile.mkdtemp()
 	tempFileName = url.rsplit('/', 1)[-1]
 	# Strip question mark
 	tempFileName = tempFileName.split('?')[0]
 	imagePath = dirpath + "/" + tempFileName
+	rImage = None
 	
 	try:
-		rImage = requests.get(url, stream = True, headers = {'User-agent': ua})
+		rImage = await DL.async_dl(url, headers={ "user-agent" : ua })
+		#print("Got {} bytes".format(len(rImage)))
 	except:
+		pass
+	if not rImage:
+		#print("'{}'\n - Returned no data.".format(url))
 		remove(dirpath)
 		return None
 
 	with open(imagePath, 'wb') as f:
-		for chunk in rImage.iter_content(chunk_size=1024):
-			if chunk:
-				f.write(chunk)
-	
+		f.write(rImage)
+
 	# Check if the file exists
 	if not os.path.exists(imagePath):
+		#print("'{}'\n - Doesn't exist.".format(imagePath))
 		remove(dirpath)
 		return None
-	
-	# Let's make sure it's less than the passed limit
-	imageSize = os.stat(imagePath)
-	
-	while int(imageSize.st_size) > sizeLimit:
-		try:
-			# Image is too big - resize
-			myimage = Image.open(imagePath)
-			xsize, ysize = myimage.size
-			ratio = sizeLimit/int(imageSize.st_size)
-			xsize *= ratio
-			ysize *= ratio
-			myimage = myimage.resize((int(xsize), int(ysize)), Image.ANTIALIAS)
-			myimage.save(imagePath)
-			imageSize = os.stat(imagePath)
-		except Exception:
-			# Image too big and can't be opened
-			remove(dirpath)
-			return None
+
 	try:
 		# Try to get the extension
 		img = Image.open(imagePath)
@@ -82,18 +73,18 @@ def download(url, ext : str = "jpg", sizeLimit : int = 8000000, ua : str = 'Corp
 		img.close()
 	except Exception:
 		# Not something we understand - error out
+		#print("'{}'\n - Couldn't get extension.".format(imagePath))
 		remove(dirpath)
 		return None
 	
-	if ext:
+	if ext and not imagePath.lower().endswith("."+ext.lower()):
 		os.rename(imagePath, '{}.{}'.format(imagePath, ext))
 		return '{}.{}'.format(imagePath, ext)
 	else:
 		return imagePath
 	
-async def upload(path, bot, channel):
-	with open (path, 'rb') as f:
-		await bot.send_file(channel, path)
+async def upload(ctx, file_path, title = None):
+	return await Message.Embed(title=title, file=file_path, color=ctx.author)
 
 def addExt(path):
 	img = Image.open(path)
@@ -103,17 +94,21 @@ def addExt(path):
 	
 def remove(path):
 	"""Removed the passed file's containing directory."""
-	shutil.rmtree(os.path.dirname(path), ignore_errors=True)
+	if not path == None and os.path.exists(path):
+		shutil.rmtree(os.path.dirname(path), ignore_errors=True)
 
-async def get(url, bot, channel, title : str = 'Unknown', ua : str = 'CorpNewt DeepThoughtBot'):
+async def get(ctx, url, title = None, ua : str = 'CorpNewt DeepThoughtBot', **kwargs):
 	"""Download passed image, and upload it to passed channel."""
-	message = await bot.send_message(channel, 'Downloading...')
-	file = download(url)
-	if not file:
-		await bot.edit_message(message, 'Oh *shoot* - I couldn\'t get that image...')
+	downl = kwargs.get("download", False)
+	if not downl:
+		# Just show the embed?
+		await Message.Embed(title=title, url=url, image=url, color=ctx.author).send(ctx)
 		return
-
-	message = await bot.edit_message(message, 'Uploading...')
-	await upload(file, bot, channel)
-	await bot.edit_message(message, title)
-	remove(file)
+	message = await Message.Embed(description="Downloading...", color=ctx.author).send(ctx)
+	afile = await download(url)
+	if not afile:
+		return await Message.Embed(title="An error occurred!", description="Oh *shoot* - I couldn't get that image...").edit(ctx, message)
+	message = await Message.Embed(description="Uploading...").edit(ctx, message)
+	message = await Message.Embed(title=title, file=afile).edit(ctx, message)
+	remove(afile)
+	return message

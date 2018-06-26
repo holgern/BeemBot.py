@@ -11,6 +11,10 @@ from pyparsing import (Literal,CaselessLiteral,Word,Combine,Group,Optional,
 import math
 import operator
 
+def setup(bot):
+	# Add the bot
+	bot.add_cog(Calc(bot))
+
 __author__='Paul McGuire'
 __version__ = '$Revision: 0.0 $'
 __date__ = '$Date: 2009-03-20 $'
@@ -126,13 +130,13 @@ class Calc:
 
         if formula == None:
             msg = 'Usage: `{}calc [formula]`'.format(ctx.prefix)
-            await self.bot.send_message(ctx.message.channel, msg)
+            await ctx.channel.send(msg)
             return
 
         try:
             answer=self.nsp.eval(formula)
         except:
-            msg = 'I couldn\'t parse "{}" :(\n\n'.format(formula)
+            msg = 'I couldn\'t parse "{}" :(\n\n'.format(formula.replace('*', '\\*').replace('`', '\\`').replace('_', '\\_'))
             msg += 'I understand the following syntax:\n```\n'
             msg += "expop   :: '^'\n"
             msg += "multop  :: 'x' | '/'\n"
@@ -143,9 +147,13 @@ class Calc:
             msg += "term    :: factor [ multop factor ]*\n"
             msg += "expr    :: term [ addop term ]*```"
             msg = Nullify.clean(msg)
-            await self.bot.send_message(ctx.message.channel, msg)
+            await ctx.channel.send(msg)
             return
-
+          
+        if int(answer) == answer:
+            # Check if it's a whole number and cast to int if so
+            answer = int(answer)
+            
         msg = '{} = {}'.format(formula, answer)
         # Say message
-        await self.bot.send_message(ctx.message.channel, msg)
+        await ctx.channel.send(msg)

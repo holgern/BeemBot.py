@@ -1,5 +1,8 @@
 # Token file
-token.txt
+token*.txt
+
+# Brain file
+*.brn
 
 # Auth file
 corpSiteAuth.txt
@@ -34,6 +37,9 @@ ServerList*
 
 # Settings
 Settings*
+
+# Previous settings
+Old-Settings*
 
 # Deck
 deck.json

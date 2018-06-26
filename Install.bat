@@ -53,7 +53,7 @@ REM echo.
 
 echo Installing Discord [Development Version]...
 echo.
-call :install "https://github.com/Rapptz/discord.py/archive/master.zip#egg=discord.py[voice]"
+call :install "https://github.com/Rapptz/discord.py/archive/rewrite.zip#egg=discord.py[voice]"
 echo.
 
 echo Installing Pillow...
@@ -101,6 +101,40 @@ echo.
 call :install "pyspeedtest"
 echo.
 
+echo Installing Pytz...
+echo.
+call :install "pytz"
+echo.
+
+echo Installing Wikipedia...
+echo.
+call :install "wikipedia"
+echo.
+
+echo Installing MTranslate...
+echo.
+call :install "mtranslate"
+echo.
+
+echo Installing GiphyPop
+echo.
+call :install "git+https://github.com/shaunduncan/giphypop.git#egg=giphypop"
+echo.
+
+echo Installing NumPy
+echo.
+call :install "numpy"
+echo.
+
+echo Installing Weather
+echo.
+call :install "weather-api"
+echo.
+
+echo Installing PyMongo
+echo.
+call :install "pymongo"
+echo.
 
 REM echo Installing Flask...
 REM echo.

@@ -9,6 +9,11 @@ from   Cogs import ReadableTime
 from   Cogs import DisplayName
 from   Cogs import Nullify
 
+def setup(bot):
+	# Add the bot and deps
+	settings = bot.get_cog("Settings")
+	bot.add_cog(Remind(bot, settings))
+
 # This is the Remind module. It sends a pm to a user after a specified amount of time
 
 # Reminder = { "End" : timeToEnd, "Message" : whatToSay }
@@ -19,18 +24,44 @@ class Remind:
 	def __init__(self, bot, settings):
 		self.bot = bot
 		self.settings = settings
+		self.loop_list = []
 
-	async def onready(self):
+	def suppressed(self, guild, msg):
+		# Check if we're suppressing @here and @everyone mentions
+		if self.settings.getServerStat(guild, "SuppressMentions"):
+			return Nullify.clean(msg)
+		else:
+			return msg
+
+	# Proof of concept stuff for reloading cog/extension
+	def _is_submodule(self, parent, child):
+		return parent == child or child.startswith(parent + ".")
+
+	@asyncio.coroutine
+	async def on_unloaded_extension(self, ext):
+		# Called to shut things down
+		if not self._is_submodule(ext.__name__, self.__module__):
+			return
+		for task in self.loop_list:
+			task.cancel()
+
+	@asyncio.coroutine
+	async def on_loaded_extension(self, ext):
+		# See if we were loaded
+		if not self._is_submodule(ext.__name__, self.__module__):
+			return
 		# Check all reminders - and start timers
-		for server in self.bot.servers:
+		for server in self.bot.guilds:
 			for member in server.members:
 				reminders = self.settings.getUserStat(member, server, "Reminders")
 				if len(reminders):
 					# We have a list
 					for reminder in reminders:
-						self.bot.loop.create_task(self.checkRemind(member, reminder))
+						self.loop_list.append(self.bot.loop.create_task(self.checkRemind(member, reminder)))
 
 	async def checkRemind(self, member, reminder):
+		# Get our current task
+		task = asyncio.Task.current_task()
 		# Start our countdown
 		countDown = int(reminder['End'])-int(time.time())
 		if countDown > 0:
@@ -38,9 +69,9 @@ class Remind:
 			await asyncio.sleep(countDown)
 		
 		# Check if member is online - if so - remind them
-		if not str(member.status).lower() == "offline":
+		if not member.status == discord.Status.offline:
 			# Well, they're not Offline...
-			reminders = self.settings.getUserStat(member, member.server, "Reminders")
+			reminders = self.settings.getUserStat(member, member.guild, "Reminders")
 			# Verify reminder is still valid
 			if not reminder in reminders:
 				return
@@ -50,18 +81,24 @@ class Remind:
 			if not message:
 				message = 'You wanted me to remind you of something...'
 			msg = 'In *{}*, you wanted me to remind you:\n\n{}'.format(server, message)
-			await self.bot.send_message(member, msg)
+			try:
+				await member.send(msg)
+			except:
+				pass
 			reminders.remove(reminder)
-			self.settings.setUserStat(member, member.server, "Reminders", reminders)
+			self.settings.setUserStat(member, member.guild, "Reminders", reminders)
+		self._remove_task(task)
 					
-
-	async def member_update(self, member_before, member):
+	async def member_update(self, before, member):
+		# Not sure why I was using this "status" method before... seems to only show up here
+		# and not used in the Main.py - probably some serious brain-thought.
+		#### async def status(self, member): ####
 		# Check the user's status - and if they have any reminders
 		# If so - pm them - if not, ignore
-		if not str(member.status).lower() == "offline":
+		if not member.status == discord.Status.offline:
 			# They're not offline
 			currentTime = int(time.time())
-			reminders = self.settings.getUserStat(member, member.server, "Reminders")
+			reminders = self.settings.getUserStat(member, member.guild, "Reminders")
 			removeList = []
 			if len(reminders):
 				# We have a list
@@ -74,22 +111,22 @@ class Remind:
 						if not message:
 							message = 'You wanted me to remind you of something...'
 						msg = 'In *{}*, you wanted me to remind you:\n\n{}'.format(server, message)
-						await self.bot.send_message(member, msg)
+						await member.send(msg)
 						removeList.append(reminder)
 			if len(removeList):
 				# We have spent reminders
 				for reminder in removeList:
 					reminders.remove(reminder)
-				self.settings.setUserStat(member, member.server, "Reminders", reminders)
+				self.settings.setUserStat(member, member.guild, "Reminders", reminders)
 
 
 	@commands.command(pass_context=True)
 	async def remindme(self, ctx, message : str = None, *, endtime : str = None):
-		"""Set a reminder."""
+		"""Set a reminder.  If the message contains spaces, it must be wrapped in quotes."""
 
 		if not endtime or not message:
 			msg = 'Usage: `{}remindme "[message]" [endtime]`'.format(ctx.prefix)
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 
 		# Get current time - and end time
@@ -107,39 +144,60 @@ class Remind:
 			end = currentTime+1
 			timeFromNow = 1
 
+		if timeFromNow < 1:
+			# Less than a second - set it to 1 second
+			end = currentTime+1
+			timeFromNow = 1
+
 		# Get our readable time
 		readableTime = ReadableTime.getReadableTimeBetween(int(currentTime), int(end))
 
 		# Add reminder
-		reminders = self.settings.getUserStat(ctx.message.author, ctx.message.server, "Reminders")
-		reminder = { 'End' : end, 'Message' : message, 'Server' : ctx.message.server.name }
+		reminders = self.settings.getUserStat(ctx.message.author, ctx.message.guild, "Reminders")
+		reminder = { 'End' : end, 'Message' : message, 'Server' : self.suppressed(ctx.guild, ctx.guild.name) }
 		reminders.append(reminder)
-		self.settings.setUserStat(ctx.message.author, ctx.message.server, "Reminders", reminders)
+		self.settings.setUserStat(ctx.message.author, ctx.message.guild, "Reminders", reminders)
 
 		# Start timer for reminder
-		self.bot.loop.create_task(self.checkRemind(ctx.message.author, reminder))
+		self.loop_list.append(self.bot.loop.create_task(self.checkRemind(ctx.message.author, reminder)))
 		
 		# Confirm the reminder
 		msg = 'Okay *{}*, I\'ll remind you in *{}*.'.format(DisplayName.name(ctx.message.author), readableTime)
-		await self.bot.send_message(ctx.message.channel, msg)
+		await ctx.channel.send(msg)
 
 	@commands.command(pass_context=True)
-	async def reminders(self, ctx):
-		"""List up to 10 pending reminders."""
+	async def reminders(self, ctx, *, member = None):
+		"""List up to 10 pending reminders - pass a user to see their reminders."""
 
 		# Check if we're suppressing @here and @everyone mentions
-		if self.settings.getServerStat(ctx.message.server, "SuppressMentions").lower() == "yes":
+		if self.settings.getServerStat(ctx.message.guild, "SuppressMentions"):
 			suppress = True
 		else:
 			suppress = False
 
-		member = ctx.message.author
-		myReminders = self.settings.getUserStat(member, member.server, "Reminders")
-		msg = 'You don\'t currently have any reminders set.  You can add some with the `{}remindme "[message]" [time]` command.'.format(ctx.prefix)
+		if type(member) is str:
+			memberName = member
+			member = DisplayName.memberForName(memberName, ctx.message.guild)
+			if not member:
+				msg = 'I couldn\'t find *{}*...'.format(memberName)
+				# Check for suppress
+				if suppress:
+					msg = Nullify.clean(msg)
+				await ctx.message.channel.send(msg)
+				return
+
+		if not member:
+			member = ctx.message.author
 		
+		myReminders = self.settings.getUserStat(member, member.guild, "Reminders")
+		if member == ctx.message.author:
+			msg = 'You don\'t currently have any reminders set.  You can add some with the `{}remindme "[message]" [time]` command.'.format(ctx.prefix)
+		else:
+			msg = '*{}* doesn\'t currently have any reminders set.  They can add some with the `{}remindme "[message]" [time]` command.'.format(DisplayName.name(member), ctx.prefix)
+
 		if not len(myReminders):
 			# No reminders
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 		
 		mySorted = sorted(myReminders, key=lambda x:int(x['End']))
@@ -173,7 +231,7 @@ class Remind:
 		if suppress:
 			msg = Nullify.clean(msg)
 
-		await self.bot.send_message(ctx.message.channel, msg)
+		await ctx.channel.send(msg)
 
 
 	@commands.command(pass_context=True)
@@ -182,22 +240,23 @@ class Remind:
 		member = ctx.message.author
 		
 		# Check if we're suppressing @here and @everyone mentions
-		if self.settings.getServerStat(ctx.message.server, "SuppressMentions").lower() == "yes":
+		if self.settings.getServerStat(ctx.message.guild, "SuppressMentions"):
 			suppress = True
 		else:
 			suppress = False
 			
-		reminders = self.settings.getUserStat(member, member.server, "Reminders")
+		reminders = self.settings.getUserStat(member, member.guild, "Reminders")
+		reminders = sorted(reminders, key=lambda x:int(x['End']))
 		if not len(reminders):
 			# No reminders
 			msg = "Oooh, look at you, *so much to be reminded about*... Just kidding.  You don't have any reminders to clear."
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 		
 		if index == None:
-			self.settings.setUserStat(member, member.server, "Reminders", [])
+			self.settings.setUserStat(member, member.guild, "Reminders", [])
 			msg = 'Alright *{}*, your calendar has been cleared of reminders!'.format(DisplayName.name(ctx.message.author))
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 		
 		# We have something for our index
@@ -205,20 +264,21 @@ class Remind:
 			index = int(index)
 		except Exception:
 			msg = 'Usage: `{}clearmind [index]`'.format(ctx.prefix)
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 		
 		# We have an int
 		if index < 1 or index > len(reminders):
 			# Out of bounds!
 			msg = "You'll have to pick an index between 1 and {}.".format(len(reminders))
-			await self.bot.send_message(ctx.message.channel, msg)
+			await ctx.channel.send(msg)
 			return
 		
 		# We made it!  Valid index and all sorts of stuff
 		removed = reminders.pop(index-1)
+		self.settings.setUserStat(member, member.guild, "Reminders", reminders)
 		msg = "I will no longer remind you: {}".format(removed["Message"])
 		# Check for suppress
 		if suppress:
 			msg = Nullify.clean(msg)
-		await self.bot.send_message(ctx.message.channel, msg)
+		await ctx.channel.send(msg)

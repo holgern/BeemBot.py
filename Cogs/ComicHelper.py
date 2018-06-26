@@ -1,9 +1,9 @@
 import random
 import math
 import datetime as dt
-import urllib.request
-import urllib
-import requests
+from   pyquery import PyQuery as pq
+from   Cogs import DL
+from   urllib.parse import unquote
 
 try:
     # Python 2.6-2.7
@@ -11,6 +11,10 @@ try:
 except ImportError:
     # Python 3
     from html.parser import HTMLParser
+
+def setup(bot):
+	# Not a cog - pass
+	pass
 
 # This module contains all the shit methods used for getting comic URLs... ugh.
 
@@ -113,12 +117,9 @@ def find_last_between( source, start_sep, end_sep ):
 	else:
 		return result[len(result)-1] # Return last item
 
-def getImageHTML ( url, ua : str = '' ):
+async def getImageHTML ( url, ua : str = '' ):
     try:
-        req = urllib.request.Request(url, data=None,headers={'User-Agent': ua})
-        with urllib.request.urlopen(req) as f:
-            htmlSource = str(f.read())
-            return htmlSource
+        return await DL.async_text(url, {'User-Agent': ua})
     except Exception as e:
         return None
 
@@ -137,9 +138,18 @@ def getImageTitle ( html ):
 
 def getCHURL ( html, date ):
 	# YYYY.MM.DD format
-	# <a href="[comic url]">2005.01.31</a>
-	comicBlock = find_last_between( html, '<a href="', "\">" + date + "</a>")
+
+	# <div class="small-3 medium-3 larg-3 columns">
+	#   ... <a href="/comics/4951">
+	# <div id="comic-author">
+	#   ... "\n2018.06.05"
 	
+	comicBlock = find_last_between( html, "<a href=", date)
+	if comicBlock:
+		comicBlock = comicBlock.split(">")[0]
+	if not "http" in comicBlock.lower():
+		comicBlock = "http://explosm.net" + comicBlock
+
 	if not comicBlock:
 		return None
 	else:
@@ -227,6 +237,17 @@ def getXKCDImageTitle ( html ):
 	imageTitle = imageTitle.replace('/', '').strip()
 	return imageTitle
 
+def getXKCDImageText ( html ):
+	comicBlock = find_last_between( html, 'div id="comic"', "</div>")
+	
+	if not comicBlock:
+		return None
+	
+	imageText = find_last_between( comicBlock, 'title="', '" ' )
+	parser = HTMLParser()
+	imageText = parser.unescape(imageText)
+	return unquote(imageText)
+
 # Garfield Minus Garfield Methods
 
 def getGMGImageURL ( html ):
@@ -263,8 +284,13 @@ def getGImageURL ( html ):
 def getPeanutsImageURL ( html ):
 	if not html:
 		return None
-		
-	comicBlock = find_last_between( html, 'src=', ' />')
+
+	dom = pq(html)
+
+	pic = dom('picture.img-fluid.item-comic-image')
+	pic = str(pic).strip().replace('\r', '').replace('\n', ' ').replace('\t', ' ')
+
+	comicBlock = find_last_between( pic, 'src=', '/>')
 	
 	if not comicBlock:
 		return None

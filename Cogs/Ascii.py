@@ -5,8 +5,12 @@ from   discord.ext import commands
 from   Cogs import Settings
 from   Cogs import DisplayName
 from   Cogs import Nullify
-import requests
+from   Cogs import DL
 import urllib
+
+def setup(bot):
+	# Add the bot
+	bot.add_cog(Ascii(bot))
 	
 class Ascii:
     
@@ -18,14 +22,13 @@ class Ascii:
 		"""Beautify some text (font list at http://artii.herokuapp.com/fonts_list)."""
 
 		if text == None:
-			await self.bot.send_message(ctx.message.channel, 'Usage: `{}ascii [font (optional)] [text]`\n(font list at http://artii.herokuapp.com/fonts_list)'.format(ctx.prefix))
+			await ctx.channel.send('Usage: `{}ascii [font (optional)] [text]`\n(font list at http://artii.herokuapp.com/fonts_list)'.format(ctx.prefix))
 			return
 
 		# Get list of fonts
 		fonturl = "http://artii.herokuapp.com/fonts_list"
-		get_request = self.bot.loop.run_in_executor(None, requests.get, fonturl)
-		response = await get_request
-		fonts = response.text.split()
+		response = await DL.async_text(fonturl)
+		fonts = response.split()
 
 		font = None
 		# Split text by space - and see if the first word is a font
@@ -40,6 +43,5 @@ class Ascii:
 		url = "http://artii.herokuapp.com/make?{}".format(urllib.parse.urlencode({'text':text}))
 		if font:
 			url += '&font={}'.format(font)
-		get_request = self.bot.loop.run_in_executor(None, requests.get, url)
-		response = await get_request
-		await self.bot.say("```Markup\n{}```".format(response.text))
+		response = await DL.async_text(url)
+		await ctx.channel.send("```Markup\n{}```".format(response))
