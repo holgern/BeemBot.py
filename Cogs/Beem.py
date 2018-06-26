@@ -105,8 +105,8 @@ class Beem:
                                              "%.3f SBD" % float(row[3]),
                                              "%.3f SP" % (row[4]),
                                              "%.1f %%" % (row[5])])
-                if len(authorperm_list) == 1:
-                    new_row = new_row2
+                
+                new_row = new_row2
         if found_voter:
             t.add_row(new_row2 + voter2 + ["", "", "", "", ""])
             if sum_curation[0] > 0:
