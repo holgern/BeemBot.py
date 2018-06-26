@@ -93,16 +93,6 @@ class Beem:
         voter2 = [""]
         found_voter = False
         for row in sortedList:
-            if limit is not None and row[1] > float(limit):
-                continue
-            if min_vote is not None and float(row[2]) < float(min_vote):
-                continue
-            if max_vote is not None and float(row[2]) > float(max_vote):
-                continue
-            if min_performance is not None and float(row[5]) < float(min_performance):
-                continue
-            if max_performance is not None and float(row[5]) > float(max_performance):
-                continue
             if show_all_voter:
                 if not all_posts:
                     voter = [row[0]]
