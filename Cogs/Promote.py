@@ -10,9 +10,9 @@ from   Cogs import Nullify
 from   Cogs import Xp
 
 def setup(bot):
-	# Add the bot and deps
-	settings = bot.get_cog("Settings")
-	bot.add_cog(Promote(bot, settings))
+    # Add the bot and deps
+    settings = bot.get_cog("Settings")
+    bot.add_cog(Promote(bot, settings))
 
 # This module is for auto promoting/demoting of roles - admin only
 
@@ -56,7 +56,7 @@ class Promote:
             suppress = True
         else:
             suppress = False
-        
+
         usage = 'Usage: `{}promote [member]`'.format(ctx.prefix)
 
         if member == None:
@@ -127,7 +127,7 @@ class Promote:
             suppress = True
         else:
             suppress = False
-        
+
         usage = 'Usage: `{}promoteto [member] [role]`'.format(ctx.prefix)
 
         if member == None:
@@ -152,7 +152,7 @@ class Promote:
                     if memFromName:
                         # We got a member - let's check for a role
                         roleFromName = DisplayName.roleForName(roleStr, ctx.message.guild)
-                            
+
                         if not roleFromName == None:
                             # We got a member and a role - break
                             role = roleFromName
@@ -188,7 +188,7 @@ class Promote:
                 msg = Nullify.clean(msg)
             await channel.send(msg)
             return
-        
+
         if currentRole == nextRole:
             # We are already the target role
             if role.name[:1].lower() in vowels:
@@ -231,7 +231,7 @@ class Promote:
             else:
                 msg = '*{}* was given *{:,} xp* and promoted to **{}**!'.format(DisplayName.name(member), neededXp, newRole.name)
             self.bot.dispatch("xp", member, ctx.author, neededXp)
-	# Check for suppress
+        # Check for suppress
         if suppress:
             msg = Nullify.clean(msg)
         await channel.send(msg)
@@ -254,7 +254,7 @@ class Promote:
             suppress = True
         else:
             suppress = False
-        
+
         usage = 'Usage: `{}demote [member]`'.format(ctx.prefix)
 
         if member == None:
@@ -316,7 +316,7 @@ class Promote:
             else:
                 msg = '*{:,} xp* was taken from *{}* and they were demoted to **{}**!'.format(neededXp*-1, DisplayName.name(member), newRole.name)
             self.bot.dispatch("xp", member, ctx.author, neededXp)
-	# Check for suppress
+        # Check for suppress
         if suppress:
             msg = Nullify.clean(msg)
         await channel.send(msg)
@@ -340,7 +340,7 @@ class Promote:
             suppress = True
         else:
             suppress = False
-        
+
         usage = 'Usage: `{}demoteto [member] [role]`'.format(ctx.prefix)
 
         if member == None:
@@ -365,7 +365,7 @@ class Promote:
                     if memFromName:
                         # We got a member - let's check for a role
                         roleFromName = DisplayName.roleForName(roleStr, ctx.message.guild)
-                            
+
                         if not roleFromName == None:
                             # We got a member and a role - break
                             role = roleFromName
@@ -393,7 +393,7 @@ class Promote:
         nextRole = self.getIndexForRole(role, server)
         currentRole = self.getCurrentRoleIndex(member, server)
         vowels = 'aeiou'
-        
+
         if nextRole == None:
             msg = '**{}** doesn\'t appear to be in the xp role list - consider adding it with the `{}addxprole [role] [xp amount]` command.'.format(role.name, ctx.prefix)
             # Check for suppress
@@ -442,7 +442,7 @@ class Promote:
         else:
             msg = '*{:,} xp* was taken from *{}* and they were demoted to **{}**!'.format(neededXp*-1, DisplayName.name(member), newRole.name)
         self.bot.dispatch("xp", member, ctx.author, neededXp)
-	# Check for suppress
+        # Check for suppress
         if suppress:
             msg = Nullify.clean(msg)
         await channel.send(msg)

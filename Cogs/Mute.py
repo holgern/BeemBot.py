@@ -55,8 +55,8 @@ class Mute:
                     self.loop_list.append(self.bot.loop.create_task(self.checkMute(member, server, cooldown)))
         # Add a loop to remove expired mutes in the MuteList
         self.loop_list.append(self.bot.loop.create_task(self.mute_list_check()))
-                    
-        
+
+
     def suppressed(self, guild, msg):
         # Check if we're suppressing @here and @everyone mentions
         if self.settings.getServerStat(guild, "SuppressMentions"):
@@ -71,7 +71,7 @@ class Mute:
             if str(entry['ID']) == str(member.id):
                 # Found them - mute them
                 await self.mute(member, server, entry['Cooldown'])
-            
+
     async def mute_list_check(self):
         while not self.bot.is_closed():
             # Iterate through the servers and check for roll-off mutes
@@ -106,7 +106,7 @@ class Mute:
                 self.settings.setServerStat(guild, "MuteList", mute_list)
             # Check once per hour
             await asyncio.sleep(3600)
-            
+
     def _remove_task(self, task):
         if task in self.loop_list:
             self.loop_list.remove(task)
@@ -124,7 +124,7 @@ class Mute:
         # But check if the mute time has changed
         cd = self.settings.getUserStat(member, server, "Cooldown")
         isMute = self.settings.getUserStat(member, server, "Muted")
-        
+
         if cd == None:
             if isMute.lower() == 'yes':
                 # We're now muted permanently
@@ -163,12 +163,12 @@ class Mute:
                     await channel.set_permissions(member, overwrite=overs)
                 except Exception:
                     continue
-        
+
         self.settings.setUserStat(member, server, "Muted", True)
         self.settings.setUserStat(member, server, "Cooldown", cooldown)
 
         muteList = self.settings.getServerStat(server, "MuteList")
-        
+
         # check if we're already muted
         found = False
         for entry in muteList:
@@ -179,7 +179,7 @@ class Mute:
                 break
         if not found:
             muteList.append({ 'ID': member.id, 'Cooldown': cooldown, 'Added' : int(time.time()) })
-        
+
         if not cooldown == None:
             # We have a cooldown - set a timer
             self.loop_list.append(self.bot.loop.create_task(self.checkMute(member, server, cooldown)))

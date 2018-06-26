@@ -11,9 +11,9 @@ from   Cogs        import DisplayName
 from   Cogs        import Nullify
 
 def setup(bot):
-	# Add the bot and deps
-	settings = bot.get_cog("Settings")
-	bot.add_cog(Welcome(bot, settings))
+    # Add the bot and deps
+    settings = bot.get_cog("Settings")
+    bot.add_cog(Welcome(bot, settings))
 
 class Welcome:
 
@@ -62,7 +62,7 @@ class Welcome:
             await self._goodbye(member, server, welcomeChannel)
         else:
             await self._goodbye(member, server)
-            
+
     def _getDefault(self, server):
         # Returns the default channel for the server
         targetChan = server.get_channel(server.id)
@@ -79,7 +79,7 @@ class Welcome:
     async def setwelcome(self, ctx, *, message = None):
         """Sets the welcome message for your server (bot-admin only). 
         Available Options:
-        
+
         [[user]]   = user name
         [[atuser]] = user mention
         [[server]] = server name
@@ -182,8 +182,8 @@ class Welcome:
             else:
                 msg = 'There is *no channel* set for welcome messages.'
         await ctx.channel.send(msg)
-        
-        
+
+
     @commands.command(pass_context=True)
     async def rawwelcome(self, ctx, *, member = None):
         """Prints the current welcome message's markdown (bot-admin only)."""
@@ -250,7 +250,7 @@ class Welcome:
     async def setgoodbye(self, ctx, *, message = None):
         """Sets the goodbye message for your server (bot-admin only).
         Available Options:
-        
+
         [[user]]   = user name
         [[atuser]] = user mention
         [[server]] = server name
@@ -339,7 +339,7 @@ class Welcome:
             await ctx.channel.send('Goodbye message not setup.  You can do so with the `{}setgoodbye [message]` command.'.format(ctx.prefix))
             return
         await self._goodbye(member, ctx.message.guild, ctx.message.channel)
-        
+
         # Print the goodbye channel
         welcomeChannel = self.settings.getServerStat(ctx.message.guild, "WelcomeChannel")
         if welcomeChannel:
@@ -355,8 +355,8 @@ class Welcome:
             else:
                 msg = 'There is *no channel* set for goodbye messages.'
         await ctx.channel.send(msg)
-        
-        
+
+
     @commands.command(pass_context=True)
     async def rawgoodbye(self, ctx, *, member = None):
         """Prints the current goodbye message's markdown (bot-admin only)."""
@@ -449,7 +449,7 @@ class Welcome:
             if not m.status == discord.Status.offline:
                 online_count += 1
         message = re.sub(self.regexOnline,    "{:,}".format(online_count), message)
-                
+
         if suppress:
             message = Nullify.clean(message)
 

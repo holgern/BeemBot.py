@@ -105,7 +105,7 @@ class Plist:
             sorted_list = sorted(new_items, key=lambda x:x["value"], reverse=True)
             if not len(sorted_list):
                 await Message.EmbedText(
-                    title="⚠ An error occurred!", 
+                    title="⚠  An error occurred!", 
                     description="There were no updates found at \"{}\".".format(self.nv_link),
                     color=ctx.author
                 ).send(ctx)

@@ -13,9 +13,9 @@ from beem import Steem
 from beem.account import Account
 
 def setup(bot):
-	# Add the bot and deps
-	settings = bot.get_cog("Settings")
-	bot.add_cog(Beem(bot, settings))
+    # Add the bot and deps
+    settings = bot.get_cog("Settings")
+    bot.add_cog(Beem(bot, settings))
 
 
 class Beem:
@@ -24,7 +24,7 @@ class Beem:
         self.bot = bot
         self.settings = settings
         self.stm = Steem()
-       
+
     @commands.command(pass_context=True)
     async def account(self, ctx, *, account : str = None):
         """Retuns information about an account"""

@@ -1,8 +1,8 @@
 import asyncio, aiohttp, json
 
 def setup(bot):
-	# Not a cog
-	pass
+    # Not a cog
+    pass
 
 async def async_post_json(url, data = None, headers = None):
     with aiohttp.ClientSession(headers=headers) as session:

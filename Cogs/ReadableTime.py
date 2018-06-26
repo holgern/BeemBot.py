@@ -1,7 +1,7 @@
 import datetime, calendar
 
 def setup(bot):
-	# This module isn't actually a cog
+        # This module isn't actually a cog
     return
 
 def get_years(timeBetween, year, reverse):
@@ -61,14 +61,14 @@ def getReadableTimeBetween(first, last, reverse=False):
 
     timeBetween, years, year = get_years(timeBetween, year, reverse)
     timeBetween, months = get_months(timeBetween, year, month, reverse)
-    
+
     weeks   = int(timeBetween/604800)
     days    = int((timeBetween-(weeks*604800))/86400)
     hours   = int((timeBetween-(days*86400 + weeks*604800))/3600)
     minutes = int((timeBetween-(hours*3600 + days*86400 + weeks*604800))/60)
     seconds = int(timeBetween-(minutes*60 + hours*3600 + days*86400 + weeks*604800))
     msg = ""
-    
+
     if years > 0:
         msg += "1 year, " if years == 1 else "{:,} years, ".format(years)
     if months > 0:

@@ -9,9 +9,9 @@ from   Cogs        import UserTime
 from   Cogs        import Message
 
 def setup(bot):
-	# Add the bot and deps
-	settings = bot.get_cog("Settings")
-	bot.add_cog(ServerStats(bot, settings))
+    # Add the bot and deps
+    settings = bot.get_cog("Settings")
+    bot.add_cog(ServerStats(bot, settings))
 
 class ServerStats:
 
@@ -31,13 +31,13 @@ class ServerStats:
                 messages = 0
             messages += 1
             self.settings.setServerStat(server, "TotalMessages", messages)
-            
+
         return { 'Ignore' : False, 'Delete' : False}
 
     @commands.command(pass_context=True)
     async def serverinfo(self, ctx, *, guild_name = None):
         """Lists some info about the current or passed server."""
-        
+
         # Check if we passed another guild
         guild = None
         if guild_name == None:
@@ -54,15 +54,15 @@ class ServerStats:
             # We didn't find it
             await ctx.send("I couldn't find that guild...")
             return
-        
+
         # server_embed = discord.Embed(color=ctx.author.color)
         server_embed = discord.Embed()
         server_embed.title = guild.name
-        
+
         # Get localized user time
         local_time = UserTime.getUserTime(ctx.author, self.settings, guild.created_at)
         time_str = "{} {}".format(local_time['time'], local_time['zone'])
-        
+
         server_embed.description = "Created at {}".format(time_str)
         online_members = 0
         bot_member     = 0
@@ -71,22 +71,22 @@ class ServerStats:
             if member.bot:
                 bot_member += 1
                 if not member.status == discord.Status.offline:
-                        bot_online += 1
+                    bot_online += 1
                 continue
             if not member.status == discord.Status.offline:
                 online_members += 1
         # bot_percent = "{:,g}%".format((bot_member/len(guild.members))*100)
         user_string = "{:,}/{:,} online ({:,g}%)".format(
-                online_members,
-                len(guild.members) - bot_member,
-                round((online_members/(len(guild.members) - bot_member) * 100), 2)
+            online_members,
+            len(guild.members) - bot_member,
+            round((online_members/(len(guild.members) - bot_member) * 100), 2)
         )
         b_string = "bot" if bot_member == 1 else "bots"
         user_string += "\n{:,}/{:,} {} online ({:,g}%)".format(
-                bot_online,
-                bot_member,
-                b_string,
-                round((bot_online/bot_member)*100, 2)
+            bot_online,
+            bot_member,
+            b_string,
+            round((bot_online/bot_member)*100, 2)
         )
         #server_embed.add_field(name="Members", value="{:,}/{:,} online ({:.2f}%)\n{:,} {} ({}%)".format(online_members, len(guild.members), bot_percent), inline=True)
         server_embed.add_field(name="Members ({:,} total)".format(len(guild.members)), value=user_string, inline=True)
@@ -99,28 +99,28 @@ class ServerStats:
         server_embed.add_field(name="Verification", value=guild.verification_level, inline=True)
         server_embed.add_field(name="Voice Region", value=guild.region, inline=True)
         server_embed.add_field(name="Considered Large", value=guild.large, inline=True)
-	# Find out where in our join position this server is
+        # Find out where in our join position this server is
         joinedList = []
         popList    = []
         for g in self.bot.guilds:
             joinedList.append({ 'ID' : g.id, 'Joined' : g.me.joined_at })
             popList.append({ 'ID' : g.id, 'Population' : len(g.members) })
-        
+
         # sort the guilds by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'])
         popList = sorted(popList, key=lambda x:x['Population'], reverse=True)
-        
+
         check_item = { "ID" : guild.id, "Joined" : guild.me.joined_at }
         total = len(joinedList)
         position = joinedList.index(check_item) + 1
         server_embed.add_field(name="Join Position", value="{:,} of {:,}".format(position, total), inline=True)
-        
+
         # Get our population position
         check_item = { "ID" : guild.id, "Population" : len(guild.members) }
         total = len(popList)
         position = popList.index(check_item) + 1
         server_embed.add_field(name="Population Rank", value="{:,} of {:,}".format(position, total), inline=True)
-        
+
         emojitext = ""
         emojicount = 0
         for emoji in guild.emojis:
@@ -170,7 +170,7 @@ class ServerStats:
 
         if member == None:
             member = ctx.author
-        
+
         if type(member) is str:
             member_check = DisplayName.memberForName(member, ctx.guild)
             if not member_check:
@@ -322,7 +322,7 @@ class ServerStats:
     @commands.command(pass_context=True)
     async def users(self, ctx):
         """Lists the total number of users on all servers I'm connected to."""
-        
+
         message = await Message.EmbedText(title="Counting users...", color=ctx.message.author).send(ctx)
         servers = members = membersOnline = bots = botsOnline = 0
         counted_users = []
@@ -350,9 +350,9 @@ class ServerStats:
                 { "name" : "Users", "value" : "└─ {:,}/{:,} online ({:,g}%) - {:,} unique ({:,g}%)".format(membersOnline, members, round((membersOnline/members)*100, 2), len(counted_users), round((len(counted_users)/members)*100, 2)), "inline" : False},
                 { "name" : "Bots", "value" : "└─ {:,}/{:,} online ({:,g}%) - {:,} unique ({:,g}%)".format(botsOnline, bots, round((botsOnline/bots)*100, 2), len(counted_bots), round(len(counted_bots)/bots*100, 2)), "inline" : False},
                 { "name" : "Total", "value" : "└─ {:,}/{:,} online ({:,g}%)".format(membersOnline + botsOnline, members+bots, round(((membersOnline + botsOnline)/(members+bots))*100, 2)), "inline" : False}
-            ],
+                ],
             color=ctx.message.author).edit(ctx, message)
-        
+
         '''userCount = 0
         serverCount = 0
         counted_users = []
@@ -365,7 +365,7 @@ class ServerStats:
                     counted_users.append(member.id)
         await message.edit(content='There are *{:,} users* (*{:,}* unique) on the *{:,} servers* I am currently a part of!'.format(userCount, len(counted_users), serverCount))'''
 
-	
+
     @commands.command(pass_context=True)
     async def joinpos(self, ctx, *, member = None):
         """Tells when a user joined compared to other users."""
@@ -377,7 +377,7 @@ class ServerStats:
 
         if member == None:
             member = ctx.author
-        
+
         if type(member) is str:
             member_check = DisplayName.memberForName(member, ctx.guild)
             if not member_check:
@@ -391,7 +391,7 @@ class ServerStats:
         joinedList = []
         for mem in ctx.message.guild.members:
             joinedList.append({ 'ID' : mem.id, 'Joined' : mem.joined_at })
-        
+
         # sort the users by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'])
 
@@ -402,7 +402,7 @@ class ServerStats:
 
         before = ""
         after  = ""
-        
+
         msg = "*{}'s* join position is **{:,}**.".format(DisplayName.name(member), position, total)
         if position-1 == 1:
             # We have previous members
@@ -445,7 +445,7 @@ class ServerStats:
         joinedList = []
         for member in ctx.message.guild.members:
             joinedList.append({ 'ID' : member.id, 'Joined' : member.joined_at })
-        
+
         # sort the users by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'])
 
@@ -459,7 +459,7 @@ class ServerStats:
             time_str = "{} {}".format(local_time['time'], local_time['zone'])
             msg += '{}. *{}* - *{}*\n'.format(i, DisplayName.name(DisplayName.memberForID(member['ID'], ctx.message.guild)), time_str)
             i += 1
-        
+
         if number < len(joinedList):
             msg = '__**First {} of {} Members to Join:**__\n\n'.format(number, len(joinedList))+msg
         else:
@@ -488,7 +488,7 @@ class ServerStats:
         joinedList = []
         for member in ctx.message.guild.members:
             joinedList.append({ 'ID' : member.id, 'Joined' : member.joined_at })
-        
+
         # sort the users by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'], reverse=True)
 
@@ -502,7 +502,7 @@ class ServerStats:
             time_str = "{} {}".format(local_time['time'], local_time['zone'])
             msg += '{}. *{}* - *{}*\n'.format(i, DisplayName.name(DisplayName.memberForID(member['ID'], ctx.message.guild)), time_str)
             i += 1
-        
+
         if number < len(joinedList):
             msg = '__**Last {} of {} Members to Join:**__\n\n'.format(number, len(joinedList))+msg
         else:
@@ -512,7 +512,7 @@ class ServerStats:
         if suppress:
             msg = Nullify.clean(msg)
         await ctx.channel.send(msg)
-        
+
     @commands.command(pass_context=True)
     async def firstservers(self, ctx, number : int = 10):
         """Lists the first servers I've joined - default is 10, max is 25."""
@@ -532,7 +532,7 @@ class ServerStats:
         for guild in self.bot.guilds:
             botmember = DisplayName.memberForID(self.bot.user.id, guild)
             joinedList.append({ 'Name' : guild.name, 'Joined' : botmember.joined_at, 'Members': len(guild.members) })
-        
+
         # sort the servers by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'])
 
@@ -549,7 +549,7 @@ class ServerStats:
             else:
                 msg += '{}. *{}* - *{}* - *({} members)*\n'.format(i, member['Name'], time_str, member['Members'])
             i += 1
-        
+
         if number < len(joinedList):
             msg = '__**First {} of {} Servers I Joined:**__\n\n'.format(number, len(joinedList))+msg
         else:
@@ -579,7 +579,7 @@ class ServerStats:
         for guild in self.bot.guilds:
             botmember = DisplayName.memberForID(self.bot.user.id, guild)
             joinedList.append({ 'Name' : guild.name, 'Joined' : botmember.joined_at, 'Members': len(guild.members) })
-        
+
         # sort the servers by join date
         joinedList = sorted(joinedList, key=lambda x:x['Joined'], reverse=True)
 
@@ -596,7 +596,7 @@ class ServerStats:
             else:
                 msg += '{}. *{}* - *{}* - *({} members)*\n'.format(i, member['Name'], time_str, member['Members'])
             i += 1
-        
+
         if number < len(joinedList):
             msg = '__**Last {} of {} Servers I Joined:**__\n\n'.format(number, len(joinedList))+msg
         else:

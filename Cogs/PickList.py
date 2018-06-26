@@ -3,7 +3,7 @@ import discord
 from   discord.ext import commands
 
 def setup(bot):
-	# This module isn't actually a cog
+        # This module isn't actually a cog
     return
 
 class Picker:
@@ -59,7 +59,7 @@ class Picker:
             # Didn't get a reaction
             await message.clear_reactions()
             return (-2, message)
-        
+
         await message.clear_reactions()
         # Get the adjusted index
         ind = current_reactions.index(str(reaction.emoji))

@@ -9,14 +9,14 @@ import os
 import mtranslate
 
 def setup(bot):
-	# Add the bot and deps
-	settings = bot.get_cog("Settings")
-	bot.add_cog(Translate(bot, settings))
+    # Add the bot and deps
+    settings = bot.get_cog("Settings")
+    bot.add_cog(Translate(bot, settings))
 
 # Requires the mtranslate module be installed
 
 class Translate:
-            
+
     def __init__(self, bot, settings, language_file = "Languages.json"):
         self.bot = bot
         self.settings = settings
@@ -38,25 +38,25 @@ class Translate:
             return
         description = ""
         for lang in self.languages:
-                description += "**{}** - {}\n".format(lang["name"], lang["code"])
+            description += "**{}** - {}\n".format(lang["name"], lang["code"])
         await Message.EmbedText(title="Language List",
-                force_pm=True,
-                description=description,
-                color=ctx.author,
-                footer="Note - some languages may not be supported."
-        ).send(ctx)
+                                force_pm=True,
+                                description=description,
+                                color=ctx.author,
+                                footer="Note - some languages may not be supported."
+                                ).send(ctx)
 
     @commands.command(pass_context=True)
     async def tr(self, ctx, *, translate = None):
         """Translate some stuff!  Takes a phrase, the from language identifier (optional), and the to language identifier.
         To see a number of potential language identifiers, use the langlist command.
-        
+
         Example Translation:
         $tr Hello there, how are you? en es
-        
+
         Would translate from English to Spanish resulting in:
         ¿Hola como estás?
-        
+
         If you do not specify the from language, Google translate will attempt to automatically determine it."""
 
         # Check if we're suppressing @here and @everyone mentions
@@ -93,42 +93,42 @@ class Translate:
             trans = " ".join(word_list[:-2])
         else:
             trans = " ".join(word_list[:-1])
-        
+
         if not lang_code:
             await Message.EmbedText(
-                        title="Something went wrong...",
-                        description="I couldn't find that language!",
-                        color=ctx.author
+                title="Something went wrong...",
+                description="I couldn't find that language!",
+                color=ctx.author
                 ).send(ctx)
             return
 
         result = mtranslate.translate(trans, lang_code, from_lang_code)
-        
+
         if not result:
             await Message.EmbedText(
-                        title="Something went wrong...",
-                        description="I wasn't able to translate that!",
-                        color=ctx.author
+                title="Something went wrong...",
+                description="I wasn't able to translate that!",
+                color=ctx.author
                 ).send(ctx)
             return
-        
+
         if result == trans:
-                # We got back what we put in...
-                await Message.EmbedText(
-                        title="Something went wrong...",
-                        description="The text returned from Google was the same as the text put in.  Either the translation failed - or you were translating from/to the same language (en -> en)",
-                        color=ctx.author
+            # We got back what we put in...
+            await Message.EmbedText(
+                title="Something went wrong...",
+                description="The text returned from Google was the same as the text put in.  Either the translation failed - or you were translating from/to the same language (en -> en)",
+                color=ctx.author
                 ).send(ctx)
-                return
+            return
 
         # Check for suppress
         if suppress:
             result = Nullify.clean(result)
 
         await Message.EmbedText(
-                title="{}, your translation is:".format(DisplayName.name(ctx.author)),
-                force_pm=True,
-                color=ctx.author,
-                description=result,
-                footer="{} --> {} - Powered by Google Translate".format(from_lang_name, lang_name)
-        ).send(ctx)
+            title="{}, your translation is:".format(DisplayName.name(ctx.author)),
+            force_pm=True,
+            color=ctx.author,
+            description=result,
+            footer="{} --> {} - Powered by Google Translate".format(from_lang_name, lang_name)
+            ).send(ctx)
