@@ -108,6 +108,11 @@ class BotAdmin:
 		if not isAdmin:
 			await ctx.channel.send('You do not have sufficient privileges to access this command.')
 			return
+			
+		if member == None:
+			msg = 'Usage: `{}mute [member] [cooldown]`'.format(ctx.prefix)
+			await self.bot.send_message(ctx.message.channel, msg)
+			return
 
 		if member == None:
 			msg = 'Usage: `{}mute [member] [cooldown]`'.format(ctx.prefix)
@@ -188,6 +193,7 @@ class BotAdmin:
 			await ctx.channel.send('You can\'t mute other admins or bot-admins.')
 			return
 
+		
 		# Set cooldown - or clear it
 		if type(cooldown) is int or type(cooldown) is float:
 			if cooldown < 0:
@@ -481,6 +487,11 @@ class BotAdmin:
 			await ctx.channel.send('Oh - you probably meant to kick *yourself* instead, right?')
 			return
 		
+		# Check if we're kicking the bot
+		if member.id == self.bot.user.id:
+			await self.bot.send_message(ctx.message.channel, 'Oh - you probably meant to kick *yourself* instead, right?')
+			return
+		
 		# Check if the targeted user is admin
 		isTAdmin = member.permissions_in(ctx.message.channel).administrator
 		if not isTAdmin:
@@ -547,6 +558,11 @@ class BotAdmin:
 		# Check if we're banning the bot
 		if member.id == self.bot.user.id:
 			await ctx.channel.send('Oh - you probably meant to ban *yourself* instead, right?')
+			return
+		
+		# Check if we're banning the bot
+		if member.id == self.bot.user.id:
+			await self.bot.send_message(ctx.message.channel, 'Oh - you probably meant to ban *yourself* instead, right?')
 			return
 		
 		# Check if the targeted user is admin

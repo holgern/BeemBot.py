@@ -130,6 +130,38 @@ class Channel:
 		
 		
 	@commands.command(pass_context=True)
+	async def listmuted(self, ctx):
+		"""Lists the names of those that are muted."""
+
+		# Check if we're suppressing @here and @everyone mentions
+		if self.settings.getServerStat(ctx.message.server, "SuppressMentions").lower() == "yes":
+			suppress = True
+		else:
+			suppress = False
+
+		muteList = self.settings.getServerStat(ctx.message.server, "MuteList")
+		activeMutes = []
+		for entry in muteList:
+			member = DisplayName.memberForID(entry['ID'], ctx.message.server)
+			if member:
+				# Found one!
+				activeMutes.append(DisplayName.name(member))
+
+		if not len(activeMutes):
+			await self.bot.send_message(ctx.message.channel, "No one is currently muted.")
+			return
+
+		# We have at least one member muted
+		msg = 'Currently muted:\n\n'
+		msg += ', '.join(activeMutes)
+
+		# Check for suppress
+		if suppress:
+			msg = Nullify.clean(msg)
+		await self.bot.send_message(ctx.message.channel, msg)
+
+
+	@commands.command(pass_context=True)
 	async def ismuted(self, ctx, *, member = None):
 		"""Says whether a member is muted in chat."""
 
@@ -154,6 +186,21 @@ class Channel:
 					msg = Nullify.clean(msg)
 				await ctx.channel.send(msg)
 				return
+
+		mutedIn = 0
+		channelList = []
+		for channel in ctx.message.server.channels:
+			if not channel.type is discord.ChannelType.text:
+				continue
+			overs = channel.overwrites_for(member)
+			if overs.send_messages == False:
+				# We haven't been muted here yet
+				overs.send_messages = False
+				await self.bot.edit_channel_permissions(channel, member, overs)
+				perms = member.permissions_in(channel)
+				if perms.read_messages:
+					mutedIn +=1
+					channelList.append(channel.name)
 				
 		mutedIn = 0
 		channelList = []
@@ -344,6 +391,10 @@ class Channel:
 
 		if not chan:
 			chan = channel
+
+		if chan in self.cleanChannels:
+			# Don't clean messages from a channel that's being cleaned
+			return
 
 		# Remove original message
 		await ctx.message.delete()

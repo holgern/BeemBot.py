@@ -145,6 +145,16 @@ async def checkroles(user, channel, settings, bot, suppress : bool = False):
     if len(addRoles) or len(remRoles):
         settings.role.change_roles(user, add_roles=addRoles, rem_roles=remRoles)
 
+    # Pause if we're adding *and* removing
+    if len(remRoles) and len(addRoles):
+        await asyncio.sleep(0.2)
+
+    if len(addRoles):
+        try:
+            await bot.add_roles(user, *addRoles)
+        except Exception:
+            pass
+
     # Check if we have a message to display - and display it
     if msg and channel and (not suppress):
         # Check for suppress

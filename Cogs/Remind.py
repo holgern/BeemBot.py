@@ -138,6 +138,11 @@ class Remind:
 
 		# Get the time from now to end time
 		timeFromNow = end-currentTime
+		
+		if timeFromNow < 1:
+			# Less than a second - set it to 1 second
+			end = currentTime+1
+			timeFromNow = 1
 
 		if timeFromNow < 1:
 			# Less than a second - set it to 1 second

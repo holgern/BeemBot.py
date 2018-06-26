@@ -21,6 +21,15 @@ set "thisDir=%~dp0"
 
 goto start
 
+:update
+pushd "%thisDir%"
+echo Updating...
+echo.
+git pull
+echo.
+popd
+goto :EOF
+
 :start
 if /i "%update%" == "Yes" (
     call :update

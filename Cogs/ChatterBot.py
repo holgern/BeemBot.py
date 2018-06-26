@@ -32,7 +32,7 @@ class ChatterBot:
 		self.ownerName = "beem"
 		self.ownerGender = "man"
 		self.timeout = 3
-		self.chatBot = Kernel()
+		self.chatBot = aiml.Kernel()
 
 	def _load(self):
 		# We're ready - let's load the bots
@@ -166,7 +166,7 @@ class ChatterBot:
 		msg = self.chatBot.respond(message)
 
 		if not msg:
-			return
+			msg = "I didn't understand that.  Sorry."
 		# Check for suppress
 		if suppress:
 			msg = Nullify.clean(msg)

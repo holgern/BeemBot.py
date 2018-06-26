@@ -38,6 +38,10 @@ function main () {
 }
 
 function runBot () {
+    if [[ "$gitupdate" == "Yes" ]]; then
+        echo
+        update
+    fi
     echo
     "$py_path" "$bot"
     echo

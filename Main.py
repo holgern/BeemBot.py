@@ -225,6 +225,7 @@ async def on_member_update(before, after):
 			# Onto the next
 			continue
 
+
 @bot.event
 async def on_message(message):
 	# Post the context too
@@ -234,6 +235,10 @@ async def on_message(message):
 	if not message.guild:
 		# This wasn't said in a server, process commands, then return
 		await bot.process_commands(message)
+		return
+	
+	if message.author.bot:
+		# We don't need other bots controlling things we do.
 		return
 
 	if message.author.bot:
