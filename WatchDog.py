@@ -27,7 +27,12 @@ def get_bin(binary):
 
 def get_python():
     # Returns the local instance of python - if any
-    return get_bin("python3") if get_bin("python3") else get_bin("python")
+    if get_bin("python3.6"):
+        return get_bin("python3.6")
+    elif get_bin("python3"):
+        return get_bin("python3")
+    else:
+        return get_bin("python")
     
 def get_git():
     # Returns the local instance of git - if any

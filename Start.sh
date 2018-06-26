@@ -5,20 +5,24 @@ shopt -s nocasematch
 # turn on extended globbing
 shopt -s extglob
 
-py_path="python3"
+py_path="python3.6"
 bot="WatchDog.py"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function check_py () {
-    if [ -x "$(command -v python3)" ]; then
-        py_path="$(which python3)"
+    if [ -x "$(command -v python3.6)" ]; then
+        py_path="$(which python3.6)"
     else
-        if [ -x "$(command -v python)" ]; then
-            py_path="$(which python)"
+        if [ -x "$(command -v python3)" ]; then
+            py_path="$(which python3)"
         else
-            echo
-            exit 1
+            if [ -x "$(command -v python)" ]; then
+                py_path="$(which python)"
+            else
+                echo
+                exit 1
+            fi
         fi
     fi
     echo $py_path
