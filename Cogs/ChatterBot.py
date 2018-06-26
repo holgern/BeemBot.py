@@ -29,7 +29,7 @@ class ChatterBot:
 		self.botDir = 'standard'
 		self.botBrain = 'standard.brn'
 		self.botList = []
-		self.ownerName = "CorpNewt"
+		self.ownerName = "beem"
 		self.ownerGender = "man"
 		self.timeout = 3
 		self.chatBot = Kernel()
