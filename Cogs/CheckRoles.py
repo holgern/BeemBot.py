@@ -12,13 +12,13 @@ def setup(bot):
 async def checkroles(user, channel, settings, bot, suppress : bool = False):
     # This method checks whether we need to promote, demote, or whatever
     # then performs the said action, and outputs.
-    
+
     if type(channel) is discord.Guild:
         server = channel
         channel = None
     else:
         server = channel.guild
-    
+
     # Get our preliminary vars
     msg         = None
     xpPromote   = settings.getServerStat(server,     "XPPromote")

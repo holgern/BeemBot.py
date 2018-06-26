@@ -41,8 +41,8 @@ class EightBall:
                               "Don't count on it",
                               "My reply is no",
                               "My sources say no",
-                                      "Outlook not so good",
-                                                "Very doubtful"	]
+                              "Outlook not so good",
+                              "Very doubtful"	]
         randnum = random.randint(0, len(answerList)-1)
         msg = '{}'.format(answerList[randnum])
         # Say message

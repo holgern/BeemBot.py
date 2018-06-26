@@ -135,7 +135,7 @@ class Weather:
             list=response_list, 
             title="Please select an option for `{}`:".format(title.replace('`', '\\`')),
             ctx=ctx
-                    ).pick()
+            ).pick()
 
         if index < 0:
             # Aborted!

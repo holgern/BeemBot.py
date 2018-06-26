@@ -5,13 +5,13 @@ from   discord.ext import commands
 from   Cogs import Nullify
 
 def setup(bot):
-	# This module isn't actually a cog
+        # This module isn't actually a cog
     return
 
 def clean_message(message, *, bot = None, server = None, nullify = True):
     # Searches for <@ > and <!@ > and gets the ids between
     # then resolves them to their user name if it can be determined
-    
+
     if nullify:
         # Strip out @here and @everyone first
         zerospace = "​"
@@ -94,7 +94,7 @@ def memberForName(name, server):
     new_mem = memberForID(mem_id, server)
     if new_mem:
         return new_mem
-    
+
     return None
 
 def channelForID(checkid, server, typeCheck = None):
