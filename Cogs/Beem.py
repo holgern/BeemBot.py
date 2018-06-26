@@ -41,7 +41,7 @@ class Beem:
     @commands.command(pass_context=True)
     async def curation(self, ctx, *, authorperm : str):
 
-        show_all_voter = True
+        show_all_voter = False
 
         all_posts = False
         t = PrettyTable(["Voter", "Voting time", "Vote", "Early vote loss", "Curation", "Performance"])
