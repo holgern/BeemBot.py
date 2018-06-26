@@ -13,6 +13,7 @@ from   Cogs import PCPP
 from beem import Steem
 from beem.account import Account
 from beem.comment import Comment
+from beem.nodelist import NodeList
 
 def setup(bot):
     # Add the bot and deps
@@ -37,6 +38,23 @@ class Beem:
         response = a.print_info(return_str=True)
         await ctx.channel.send("```" + response + "```")
 
+    @commands.command(pass_context=True)
+    async def updatenodes(self, ctx, *):
+        """Retuns information about the current node"""
+        t = PrettyTable(["node", "Version", "score"])
+        t.align = "l"
+        nodelist = NodeList()
+        nodelist.update_nodes(steem_instance=self.stm)
+        nodes = nodelist.get_nodes()
+        sorted_nodes = sorted(nodelist, key=lambda node: node["score"], reverse=True)
+        for node in sorted_nodes:
+            if node["url"] in nodes:
+                score = float("{0:.1f}".format(node["score"]))
+                t.add_row([node["url"], node["version"], score])
+        response = t.get_string()
+        self.stm.set_default_nodes(nodes)
+
+        await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
     async def curation(self, ctx, *, authorperm : str):
