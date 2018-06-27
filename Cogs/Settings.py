@@ -53,14 +53,6 @@ class RoleManager:
         for task in self.loop_list:
             task.cancel()
 
-    def _guess_server(self):
-        servers = list(self.serverDict["Servers"].keys())
-        if len(servers) == 1:
-            server = servers[0]
-            return server
-        else:
-            return None        
-
     async def check_roles(self):
         while self.running:
             # Try with a queue I suppose
@@ -316,6 +308,13 @@ class Settings:
             self.settingsDump = self.jsonOnlyDump
             self.load_json(file)
 
+    def _guess_server(self):
+        servers = list(self.serverDict["Servers"].keys())
+        if len(servers) == 1:
+            server = servers[0]
+            return server
+        else:
+            return None
 
     def load_json(self, file):
         if os.path.exists(file):
