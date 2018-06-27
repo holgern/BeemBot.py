@@ -226,12 +226,17 @@ class Humor:
         return None
 
     @commands.command(pass_context=True)
-    async def imgfliplogin(self, ctx, username = None, password = None):
+    async def imgflipcred(self, ctx, username = None, password = None):
         isAdmin = Admin.isAdmin(ctx.message)
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
-            return            
+            return
         if username is not None:
             self.settings.setServerStat(ctx.message.guild, "ImgflipUsername", username)
+        else:
+            self.settings.setServerStat(ctx.message.guild, "ImgflipUsername", "imgflip_hubot")
         if password is not None:
             self.settings.setServerStat(ctx.message.guild, "ImgflipPassword", password)
+        else:
+            self.settings.setServerStat(ctx.message.guild, "ImgflipPassword", "imgflip_hubot")
+        await ctx.message.channel.send("Username and password stored.")
