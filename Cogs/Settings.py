@@ -264,6 +264,7 @@ class Settings:
                                "MuteList"		: [],           # List of muted members
                                "ImgflipUsername"        : "imgflip_hubot",
                                "ImgflipPassword"        : "imgflip_hubot",
+                               "SteemBotAccount"        : None,
                                 }
                 # Removed for spam
                 # "ChannelMOTD" 			: {}}		# List of channel messages of the day
@@ -648,6 +649,9 @@ class Settings:
             if not "UTCOffset" in y:
                 y["UTCOffset"] = None
                 needsUpdate = True
+            if not "SteemAccount" in y:
+                y["SteemAccount"] = ""
+                needsUpdate = True
             if not "LastCommand" in y:
                 y["LastCommand"] = 0
             if not "Hardware" in y:
@@ -665,7 +669,8 @@ class Settings:
                         "Muted"			: False,
                         "LastOnline"	: "Unknown",
                         "Reminders"		: [],
-                        "Profiles"		: [] }
+                        "Profiles"		: [],
+                        "SteemAccount": ""}
             if not newUser["XP"]:
                 newUser["XP"] = 0
             if not newUser["XPReserve"]:

@@ -51,6 +51,20 @@ class Beem:
         await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
+    async def register(self, ctx, *, account : str = None):
+        """Register your steemit name"""
+        if account is None:
+            await ctx.channel.send("I do nothing!")
+            return
+        try:
+            Account(account, steem_instance=self.stm)
+        except:
+            await ctx.channel.send("Could not register %s!" % account)
+            return
+        self.settings.setUserStat(ctx.message.author, ctx.message.guild, "SteemAccount", account)
+        await ctx.channel.send("Registered!")
+
+    @commands.command(pass_context=True)
     async def updatenodes(self, ctx):
         """Retuns information about the current node"""
         t = PrettyTable(["node", "Version", "score"])
