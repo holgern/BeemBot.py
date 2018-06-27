@@ -375,7 +375,7 @@ class Debugging:
 
 
     @commands.command(pass_context=True)
-    async def setlogchannel(self, ctx, *, channel : discord.Channel = None):
+    async def setlogchannel(self, ctx, *, channel : discord.TextChannel = None):
         """Sets the channel for Logging (bot-admin only)."""
 
         isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
