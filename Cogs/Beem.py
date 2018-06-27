@@ -28,6 +28,18 @@ class Beem:
         self.settings = settings
         self.stm = Steem()
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
+
     @commands.command(pass_context=True)
     async def account(self, ctx, *, account : str = None):
         """Retuns information about an account"""
@@ -150,3 +162,4 @@ class Beem:
         response = "curation for %s\n" % (authorperm)
         response += t.get_string()
         await ctx.channel.send("```" + response + "```")
+

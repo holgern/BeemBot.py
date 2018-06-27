@@ -15,6 +15,18 @@ class OfflineUser:
     def __init__(self, bot):
         self.bot = bot
         self.settings = bot.get_cog("Settings")
+    
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin    
 
     async def _send_message(self, ctx, msg, pm = False):
         # Helper method to send messages to their proper location
@@ -59,14 +71,7 @@ class OfflineUser:
         """Sets whether to inform users that pinged members are offline or not."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in ctx.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return

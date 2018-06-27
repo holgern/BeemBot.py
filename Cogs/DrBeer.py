@@ -18,18 +18,23 @@ class DrBeer:
         self.bot = bot
         self.settings = settings
 
-    @commands.command(pass_context=True)
-    async def drbeer(self, ctx):
-        """Put yourself in your place."""
-
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
         if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
                 for aRole in checkAdmin:
                     # Get the role that corresponds to the id
                     if str(aRole['ID']) == str(role.id):
                         isAdmin = True
+        return isAdmin
+
+    @commands.command(pass_context=True)
+    async def drbeer(self, ctx):
+        """Put yourself in your place."""
+
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins
         if not isAdmin:
             return

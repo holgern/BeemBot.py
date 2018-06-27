@@ -33,6 +33,18 @@ class Admin:
         else:
             return msg
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
+
     async def test_message(self, message):
         # Implemented to bypass having this called twice
         return { "Ignore" : False, "Delete" : False }
@@ -55,7 +67,7 @@ class Admin:
         isMute = self.settings.getUserStat(message.author, message.guild, "Muted")
 
         # Check for admin status
-        isAdmin = self.isAdmin(message)
+        isAdmin = self._is_admin(message.author, message.channel, message.guild)
 
         if isMute:
             ignore = True
@@ -147,7 +159,7 @@ class Admin:
     async def setdefaultchannel(self, ctx, *, channel: discord.TextChannel = None):
         """Sets a replacement default channel for bot messages (admin only)."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -182,7 +194,7 @@ class Admin:
     async def setmadlibschannel(self, ctx, *, channel: discord.TextChannel = None):
         """Sets the channel for MadLibs (admin only)."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -219,7 +231,7 @@ class Admin:
     async def xpreservelimit(self, ctx, *, limit = None):
         """Gets and sets a limit to the maximum xp reserve a member can get.  Pass a negative value for unlimited."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
 
         if not isAdmin:
             await ctx.send('You do not have sufficient privileges to access this command.')
@@ -254,7 +266,7 @@ class Admin:
         setting_name = "One xp role at a time"
         setting_val  = "OnlyOneRole"
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send('You do not have sufficient privileges to access this command.')
             return
@@ -289,7 +301,7 @@ class Admin:
     async def xplimit(self, ctx, *, limit = None):
         """Gets and sets a limit to the maximum xp a member can get.  Pass a negative value for unlimited."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
 
         if not isAdmin:
             await ctx.send('You do not have sufficient privileges to access this command.')
@@ -334,7 +346,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -403,7 +415,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -465,7 +477,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -522,7 +534,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -596,7 +608,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -687,7 +699,7 @@ class Admin:
         server  = ctx.message.guild
         channel = ctx.message.channel
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -724,7 +736,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -807,7 +819,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -892,7 +904,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -944,7 +956,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -990,7 +1002,7 @@ class Admin:
     async def setrules(self, ctx, *, rules : str = None):
         """Set the server's rules (bot-admin only)."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
@@ -1008,7 +1020,7 @@ class Admin:
     @commands.command(pass_context=True)
     async def rawrules(self, ctx):
         """Display the markdown for the server's rules (bot-admin only)."""
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
             return
@@ -1022,7 +1034,7 @@ class Admin:
     async def lock(self, ctx):
         """Toggles whether the bot only responds to admins (admin only)."""
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
 
         # Only allow admins to change server stats
         if not isAdmin:
@@ -1051,7 +1063,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -1119,7 +1131,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
@@ -1195,7 +1207,7 @@ class Admin:
         else:
             suppress = False
 
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -1283,7 +1295,7 @@ class Admin:
 
         usage = 'Usage: `{}setmotd "[message]" [channel]`'.format(ctx.prefix)
 
-        isAdmin = self.isAdmin(message)
+        isAdmin = self._is_admin(message.author, message.channel, message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')

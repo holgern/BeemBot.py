@@ -34,11 +34,12 @@ class Humor:
                 for line in f:
                     self.adj.append(line)
 
-    async def isAdmin(self, message):
-        isAdmin = message.author.permissions_in(message.channel).administrator
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
         if not isAdmin:
-            checkAdmin = self.settings.getServerStat(message.guild, "AdminArray")
-            for role in message.author.roles:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
                 for aRole in checkAdmin:
                     # Get the role that corresponds to the id
                     if str(aRole['ID']) == str(role.id):
@@ -236,7 +237,7 @@ class Humor:
 
     @commands.command(pass_context=True)
     async def imgflipcred(self, ctx, username = None, password = None):
-        isAdmin = self.isAdmin(ctx.message)
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
             return

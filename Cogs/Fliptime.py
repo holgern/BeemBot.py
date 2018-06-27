@@ -22,6 +22,18 @@ class Fliptime:
         self.bot = bot
         self.settings = settings
         self.mute = mute
+    
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin    
 
     async def message_edit(self, before_message, message):
         # Pipe the edit into our message func to respond if needed
@@ -41,14 +53,7 @@ class Fliptime:
             return { 'Ignore' : False, 'Delete' : False}
 
         # Check for admin status
-        isAdmin = message.author.permissions_in(message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(message.guild, "AdminArray")
-            for role in message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(message.author, message.channel, message.guild)
 
         # Check if the message contains the flip chars
         conts = message.content
@@ -96,14 +101,7 @@ class Fliptime:
         """Turns on/off table flip muting (bot-admin only; always off by default)."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in ctx.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return

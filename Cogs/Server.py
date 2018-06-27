@@ -26,6 +26,17 @@ class Server:
         # Regex for extracting urls from strings
         self.regex = re.compile(r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
 
     async def message(self, message):
         if not type(message.channel) is discord.TextChannel:
@@ -65,14 +76,7 @@ class Server:
     async def setprefix(self, ctx, *, prefix : str = None):
         """Sets the bot's prefix (admin only)."""
         # Check for admin status
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
@@ -150,14 +154,7 @@ class Server:
         """Sets the server info (admin only)."""
 
         # Check for admin status
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')

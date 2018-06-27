@@ -24,6 +24,19 @@ class DisableCommand:
                            "Help"
                         ]
 
+
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
+
     async def message(self, message):
         # Check the message and see if we should allow it
         ctx = await self.bot.get_context(message)
@@ -119,7 +132,7 @@ class DisableCommand:
         """Sets whether the bot reacts to disabled commands when attempted (admin-only)."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -157,7 +170,7 @@ class DisableCommand:
         """Sets whether admins can access disabled commands (admin-only)."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -195,7 +208,7 @@ class DisableCommand:
         """Sets whether bot-admins can access disabled commands (admin-only)."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -232,7 +245,7 @@ class DisableCommand:
     async def disable(self, ctx, *, command_or_cog_name = None):
         """Disables the passed command or all commands in the passed cog (admin-only).  Command and cog names are case-sensitive."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -269,7 +282,7 @@ class DisableCommand:
     async def enable(self, ctx, *, command_or_cog_name = None):
         """Enables the passed command or all commands in the passed cog (admin-only).  Command and cog names are case-sensitive."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -305,7 +318,7 @@ class DisableCommand:
     async def listdisabled(self, ctx):
         """Lists all disabled commands (admin-only)."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -321,7 +334,7 @@ class DisableCommand:
     async def isdisabled(self, ctx, *, command_or_cog_name = None):
         """Outputs whether the passed command - or all commands in a passed cog are disabled (admin-only)."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -356,7 +369,7 @@ class DisableCommand:
     async def disableall(self, ctx):
         """Disables all enabled commands outside this module (admin-only)."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return
@@ -385,7 +398,7 @@ class DisableCommand:
     async def enableall(self, ctx):
         """Enables all disabled commands (admin-only)."""
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return

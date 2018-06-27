@@ -21,6 +21,17 @@ class XpBlock:
         self.bot = bot
         self.settings = settings
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
 
     @commands.command(pass_context=True)
     async def xpblock(self, ctx, *, user_or_role : str = None):
@@ -34,14 +45,7 @@ class XpBlock:
         else:
             suppress = False
 
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
@@ -74,14 +78,7 @@ class XpBlock:
 
         if is_user:
             # Check if they're admin or bot admin
-            isAdmin = user_or_role.permissions_in(ctx.message.channel).administrator
-            if not isAdmin:
-                checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-                for role in user_or_role.roles:
-                    for aRole in checkAdmin:
-                        # Get the role that corresponds to the id
-                        if str(aRole['ID']) == str(role.id):
-                            isAdmin = True
+            isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
             if isAdmin:
                 msg = "You can't block other admins with this command."
                 await ctx.send(msg)
@@ -139,14 +136,8 @@ class XpBlock:
         else:
             suppress = False
 
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
+
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')

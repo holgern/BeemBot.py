@@ -21,6 +21,18 @@ class UserRole:
     def _is_submodule(self, parent, child):
         return parent == child or child.startswith(parent + ".")
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
+
     @asyncio.coroutine
     async def on_unloaded_extension(self, ext):
         # Called to shut things down
@@ -53,15 +65,7 @@ class UserRole:
     @commands.command(pass_context=True)
     async def urblock(self, ctx, *, member = None):
         """Blocks a user from using the UserRole system and removes applicable roles (bot-admin only)."""
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in ctx.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
-                        break
+        isAdmin = self._is_admin(ctx.message.author, ctx.channel, ctx.guild)
         # Only allow bot-admins to change server stats
         if not isAdmin:
             await ctx.send('You do not have sufficient privileges to access this command.')
@@ -72,15 +76,7 @@ class UserRole:
             await ctx.send("I couldn't find `{}`.".format(member.replace("`", "\\`")))
             return
         # Check if we're trying to block a bot-admin
-        isAdmin = mem.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in mem.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
-                        break
+        isAdmin = self._is_admin(mem, ctx.channel, ctx.guild)
         # Only allow bot-admins to change server stats
         if isAdmin:
             await ctx.send("You can't block other admins or bot-admins from the UserRole module.")
@@ -121,15 +117,7 @@ class UserRole:
     @commands.command(pass_context=True)
     async def urunblock(self, ctx, *, member = None):
         """Unblocks a user from the UserRole system (bot-admin only)."""
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in ctx.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
-                        break
+        isAdmin = self._is_admin(ctx.author, ctx.channel, ctx.guild)
         # Only allow bot-admins to change server stats
         if not isAdmin:
             await ctx.send('You do not have sufficient privileges to access this command.')
@@ -181,7 +169,7 @@ class UserRole:
         else:
             suppress = False
 
-        isAdmin = author.permissions_in(channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -256,7 +244,7 @@ class UserRole:
         else:
             suppress = False
 
-        isAdmin = author.permissions_in(channel).administrator
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
         # Only allow admins to change server stats
         if not isAdmin:
             await channel.send('You do not have sufficient privileges to access this command.')
@@ -414,14 +402,7 @@ class UserRole:
         """Turns on/off one user role at a time (bot-admin only; always on by default)."""
 
         # Check for admin status
-        isAdmin = ctx.author.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in ctx.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(ctx.author, ctx.channel, ctx.guild)
         if not isAdmin:
             await ctx.send("You do not have permission to use this command.")
             return

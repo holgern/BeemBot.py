@@ -1,5 +1,5 @@
 def setup(bot):
-	# This module isn't actually a cog
+        # This module isn't actually a cog
     return
 
 def clean(string):
