@@ -307,7 +307,9 @@ class Settings:
     def load_json(self, file):
         if os.path.exists(file):
             print("Since no mongoDB instance was running, I'm reverting back to the Settings.json")
-            self.serverDict = json.load(open(file))
+            with open(file, 'r') as f:
+                read_data = f.read()
+            self.serverDict = json.loads(read_data)
         else:
             self.serverDict = {}
 
@@ -1151,7 +1153,8 @@ class Settings:
             json_ready.pop("_id", None)
             json_ready["mongodb_migrated"] = True
 
-            json.dump(json_ready, open(_file, 'w'), indent=2)
+            with open(_file, 'w') as outfile:
+                json.dump(json_ready, outfile, indent = 2)            
 
             # Not using a database, so we can't flush ;)
             if not self.using_db:
