@@ -44,8 +44,12 @@ class Beem:
     async def account(self, ctx, *, account : str = None):
         """Retuns information about an account"""
         if account is None:
-            account = ctx.message.author
-            account = str(account).split('#')[0]
+            regAccount = self.settings.getUserStat(ctx.message.author, ctx.message.guild, "SteemAccount")
+            if regAccount is not None and regAccount != "":
+                account = regAccount
+            else:
+                account = ctx.message.author
+                account = str(account).split('#')[0]
         a = Account(account, steem_instance=self.stm)
         response = a.print_info(return_str=True)
         await ctx.channel.send("```" + response + "```")
