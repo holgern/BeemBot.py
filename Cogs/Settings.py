@@ -52,6 +52,14 @@ class RoleManager:
         for task in self.loop_list:
             task.cancel()
 
+    def _guess_server(self):
+        servers = list(self.serverDict["Servers"].keys())
+        if len(servers) == 1:
+            server = servers[0]
+            return server
+        else:
+            return None        
+
     async def check_roles(self):
         while self.running:
             # Try with a queue I suppose
@@ -712,6 +720,8 @@ class Settings:
     # Return the requested stat
     def getUserStat(self, user, server, stat):
         # Make sure our user and server exists in the list
+        if server is None:
+            server = self._guess_server()
         self.checkUser(user, server)
         if stat in self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)]:
             return self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)][stat]
@@ -733,6 +743,8 @@ class Settings:
     # Set the provided stat
     def setUserStat(self, user, server, stat, value):
         # Make sure our user and server exists in the list
+        if server is None:
+            server = self._guess_server()        
         self.checkUser(user, server)
         self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)][stat] = value
 
@@ -768,7 +780,10 @@ class Settings:
     def getServerStat(self, server, stat):
         # Make sure our server exists in the list
         if server is None:
-            return None
+            if server is None:
+                server = self._guess_server()
+            if server is None:
+                return None
         self.checkServer(server)
         if stat in self.serverDict["Servers"][str(server.id)]:
             return self.serverDict["Servers"][str(server.id)][stat]
@@ -777,6 +792,8 @@ class Settings:
     # Set the provided stat
     def setServerStat(self, server, stat, value):
         # Make sure our server exists in the list
+        if server is None:
+            server = self._guess_server()        
         self.checkServer(server)
         self.serverDict["Servers"][str(server.id)][stat] = value
 
