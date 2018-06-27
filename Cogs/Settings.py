@@ -1,5 +1,6 @@
 import asyncio
 import discord
+from collections import namedtuple
 from   datetime    import datetime
 from   discord.ext import commands
 from   shutil      import copyfile
@@ -720,7 +721,10 @@ class Settings:
     # Return the requested stat
     def getUserStat(self, user, server, stat):
         # Make sure our user and server exists in the list
-        if server.id is None:
+        if server is None:
+            server = namedtuple("server", "id")
+            server.id = self._guess_server()        
+        elif server.id is None:
             server.id = self._guess_server()
         self.checkUser(user, server)
         if stat in self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)]:
@@ -743,7 +747,10 @@ class Settings:
     # Set the provided stat
     def setUserStat(self, user, server, stat, value):
         # Make sure our user and server exists in the list
-        if server.id is None:
+        if server is None:
+            server = namedtuple("server", "id")
+            server.id = self._guess_server()        
+        elif server.id is None:
             server.id = self._guess_server()        
         self.checkUser(user, server)
         self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)][stat] = value
@@ -780,7 +787,8 @@ class Settings:
     def getServerStat(self, server, stat):
         # Make sure our server exists in the list
         if server is None:
-            return None
+            server = namedtuple("server", "id")
+            server.id = self._guess_server()
         elif server.id is None:
             server.id = self._guess_server()
         self.checkServer(server)
@@ -791,7 +799,10 @@ class Settings:
     # Set the provided stat
     def setServerStat(self, server, stat, value):
         # Make sure our server exists in the list
-        if server.id is None:
+        if server is None:
+            server = namedtuple("server", "id")
+            server.id = self._guess_server()        
+        elif server.id is None:
             server.id = self._guess_server()        
         self.checkServer(server)
         self.serverDict["Servers"][str(server.id)][stat] = value
