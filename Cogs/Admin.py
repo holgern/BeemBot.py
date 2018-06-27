@@ -33,7 +33,7 @@ class Admin:
         else:
             return msg
 
-    def isAdmin(self, message):
+    async def isAdmin(self, message):
         isAdmin = message.author.permissions_in(message.channel).administrator
         if not isAdmin:
             checkAdmin = self.settings.getServerStat(message.guild, "AdminArray")

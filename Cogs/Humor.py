@@ -216,7 +216,6 @@ class Humor:
         await Message.Embed(image=result, color=ctx.author).send(ctx)
         # await GetImage.get(ctx, result)
 
-
     async def getTemps(self):
         url = "https://api.imgflip.com/get_memes"
         result_json = await DL.async_json(url)
@@ -229,7 +228,7 @@ class Humor:
     async def imgflipcred(self, ctx, username = None, password = None):
         isAdmin = Admin.isAdmin(ctx.message)
         if not isAdmin:
-            await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
+            await ctx.channel.send('You do not have sufficient privileges to access this command.')
             return
         if username is not None:
             self.settings.setServerStat(ctx.message.guild, "ImgflipUsername", username)
@@ -239,4 +238,4 @@ class Humor:
             self.settings.setServerStat(ctx.message.guild, "ImgflipPassword", password)
         else:
             self.settings.setServerStat(ctx.message.guild, "ImgflipPassword", "imgflip_hubot")
-        await ctx.message.channel.send("Username and password stored.")
+        await ctx.channel.send("Username and password stored.")
