@@ -11,6 +11,7 @@ from Cogs import GetImage
 from Cogs import Nullify
 from Cogs import Message
 from Cogs import DL
+from Cogs import Admin
 
 def setup(bot):
     # Add the bot and deps
@@ -202,7 +203,9 @@ class Humor:
                 msg = 'I\'ll assume you meant *{}*.'.format(nameMatch[0]['Item']['name'])
 
         url = "https://api.imgflip.com/caption_image"
-        payload = {'template_id': chosenTemp, 'username':'beembot', 'password': 'vurzCfNw67Z', 'text0': text_zero, 'text1': text_one }
+        username = self.settings.getServerStat(ctx.message.guild, "ImgflipUsername")
+        password = self.settings.getServerStat(ctx.message.guild, "ImgflipPassword")
+        payload = {'template_id': chosenTemp, 'username': username, 'password': password, 'text0': text_zero, 'text1': text_one }
         result_json = await DL.async_post_json(url, payload)
         # json.loads(r.text)
         result = result_json["data"]["url"]
@@ -221,3 +224,14 @@ class Humor:
         if templates:
             return templates
         return None
+
+    @commands.command(pass_context=True)
+    async def imgfliplogin(self, ctx, username = None, password = None):
+        isAdmin = Admin.isAdmin(ctx.message)
+        if not isAdmin:
+            await ctx.message.channel.send('You do not have sufficient privileges to access this command.')
+            return            
+        if username is not None:
+            self.settings.setServerStat(ctx.message.guild, "ImgflipUsername", username)
+        if password is not None:
+            self.settings.setServerStat(ctx.message.guild, "ImgflipPassword", password)

@@ -261,7 +261,10 @@ class Settings:
                                "StreamChannel"		: None, 	# None or channel id
                                "StreamList"		: [],		# List of user id's to watch for
                                "StreamMessage"		: "Hey everyone! *[[user]]* started streaming *[[game]]!* Check it out here: [[url]]",
-                               "MuteList"		: []}		# List of muted members
+                               "MuteList"		: [],           # List of muted members
+                               "ImgflipUsername"        : "imgflip_hubot",
+                               "ImgflipPassword"        : "imgflip_hubot",
+                                }
                 # Removed for spam
                 # "ChannelMOTD" 			: {}}		# List of channel messages of the day
 
