@@ -609,6 +609,11 @@ class Settings:
     # Let's make sure the user is in the specified server
     def checkUser(self, user, server):
         # Make sure our server exists in the list
+        if server is None:
+            server = namedtuple("server", "id")
+            server.id = self._guess_server()        
+        elif server.id is None:
+            server.id = self._guess_server()        
         self.checkServer(server)
         if str(user.id) in self.serverDict["Servers"][str(server.id)]["Members"]:
             y = self.serverDict["Servers"][str(server.id)]["Members"][str(user.id)]
