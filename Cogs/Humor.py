@@ -34,6 +34,16 @@ class Humor:
                 for line in f:
                     self.adj.append(line)
 
+    async def isAdmin(self, message):
+        isAdmin = message.author.permissions_in(message.channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(message.guild, "AdminArray")
+            for role in message.author.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
 
     @commands.command(pass_context=True)
     async def zalgo(self, ctx, *, message = None):
@@ -226,7 +236,7 @@ class Humor:
 
     @commands.command(pass_context=True)
     async def imgflipcred(self, ctx, username = None, password = None):
-        isAdmin = Admin.isAdmin(ctx.message)
+        isAdmin = self.isAdmin(ctx.message)
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
             return

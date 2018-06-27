@@ -33,17 +33,6 @@ class Admin:
         else:
             return msg
 
-    async def isAdmin(self, message):
-        isAdmin = message.author.permissions_in(message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(message.guild, "AdminArray")
-            for role in message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
-        return isAdmin
-
     async def test_message(self, message):
         # Implemented to bypass having this called twice
         return { "Ignore" : False, "Delete" : False }
