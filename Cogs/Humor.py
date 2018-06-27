@@ -202,7 +202,7 @@ class Humor:
                 msg = 'I\'ll assume you meant *{}*.'.format(nameMatch[0]['Item']['name'])
 
         url = "https://api.imgflip.com/caption_image"
-        payload = {'template_id': chosenTemp, 'username':'CorpBot', 'password': 'pooter123', 'text0': text_zero, 'text1': text_one }
+        payload = {'template_id': chosenTemp, 'username':'beembot', 'password': 'vurzCfNw67Z', 'text0': text_zero, 'text1': text_one }
         result_json = await DL.async_post_json(url, payload)
         # json.loads(r.text)
         result = result_json["data"]["url"]

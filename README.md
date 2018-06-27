@@ -1,5 +1,5 @@
-# CorpBot.py
-A *slightly* less clumsy python bot for discord
+# BeemBot.py
+A *slightly* less clumsy python bot for discord based on CorpBot.py
 
 A list of cogs, commands, and descriptions:
 
@@ -135,50 +135,6 @@ A list of cogs, commands, and descriptions:
 	  $unmute [member]
 	   └─ Allows a muted member to send messages in chat (bot-admin only).
 
-	Calc Cog (1 command) - Calc.py Extension:
-	  $calc [formula]
-	   └─ Do some math.
-
-	CardsAgainstHumanity Cog (17 commands) - CardsAgainstHumanity.py Extension:
-	  $addbot
-	   └─ Adds a bot to the game.  Can only be done by the player who created the game.
-	  $addbots [number]
-	   └─ Adds bots to the game.  Can only be done by the player who created the game.
-	  $cahgames
-	   └─ Displays up to 10 CAH games in progress.
-	  $flushhand
-	   └─ Flushes the cards in your hand - can only be done once per game.
-	  $game [message]
-	   └─ Displays the game's current status.
-	  $hand
-	   └─ Shows your hand.
-	  $idlekick [setting]
-	   └─ Sets whether or not to kick members if idle for 5 minutes or more.  Can only ...
-	  $joincah [id]
-	   └─ Join a Cards Against Humanity game.  If no id or user is passed, joins a rand...
-	  $laid
-	   └─ Shows who laid their cards and who hasn't.
-	  $lay [card]
-	   └─ Lays a card or cards from your hand.  If multiple cards are needed, separate ...
-	  $leavecah
-	   └─ Leaves the current game you're in.
-	  $newcah
-	   └─ Starts a new Cards Against Humanity game.
-	  $pick [card]
-	   └─ As the judge - pick the winning card(s).
-	  $removebot [id]
-	   └─ Removes a bot from the game.  Can only be done by the player who created the ...
-	  $removeplayer [name]
-	   └─ Removes a player from the game.  Can only be done by the player who created t...
-	  $say [message]
-	   └─ Broadcasts a message to the other players in your game.
-	  $score
-	   └─ Display the score of the current game.
-
-	Cats Cog (1 command) - Cats.py Extension:
-	  $randomcat
-	   └─ Meow.
-
 	Channel Cog (7 commands) - Channel.py Extension:
 	  $islocked
 	   └─ Says whether the bot only responds to admins.
@@ -194,12 +150,6 @@ A list of cogs, commands, and descriptions:
 	   └─ Lists the number of users in a current role.
 	  $rules
 	   └─ Display the server's rules.
-
-	ChatterBot Cog (2 commands) - ChatterBot.py Extension:
-	  $chat [message]
-	   └─ Chats with the bot.
-	  $setchatchannel [channel]
-	   └─ Sets the channel for bot chatter.
 
 	CogManager Cog (5 commands) - CogManager.py Extension:
 	  $extension [extension]
@@ -321,16 +271,6 @@ A list of cogs, commands, and descriptions:
 	  $strbin [input_string]
 	   └─ Converts the input string to its binary representation.
 
-	Example Cog (4 commands) - Example.py Extension:
-	  $add <left> <right>
-	   └─ Adds two numbers together.
-	  $choose [choices...]
-	   └─ Chooses between multiple choices.
-	  $joined [member]
-	   └─ Says when a member joined.
-	  $roll [dice=1d20]
-	   └─ Rolls a dice in NdN±Na/d format.
-
 	Face Cog (4 commands) - Face.py Extension:
 	  $lastlenny
 	   └─ Who Lenny'ed last?
@@ -395,33 +335,7 @@ A list of cogs, commands, and descriptions:
 	  $memetemps
 	   └─ Get Meme Templates
 	  $zalgo [message]
-	   └─ Ỉ s̰hͨo̹u̳lͪd͆ r͈͍e͓̬a͓͜lͨ̈l̘̇y̡͟ h͚͆a̵͢v͐͑eͦ̓ i͋̍̕n̵̰ͤs͖̟̟t͔ͤ̉ǎ͓͐ḻ̪ͨl̦͒̂e...
-
-	Hw Cog (12 commands) - Hw.py Extension:
-	  $cancelhw
-	   └─ Cancels a current hardware session.
-	  $delhw [build]
-	   └─ Removes a build from your build list.
-	  $edithw [build]
-	   └─ Edits a build from your build list.
-	  $gethw [user] [search]
-	   └─ Searches the user's hardware for a specific search term.
-	  $hw [user] [build]
-	   └─ Lists the hardware for either the user's default build - or the passed build.
-	  $listhw [user]
-	   └─ Lists the builds for the specified user - or yourself if no user passed.
-	  $mainhw [build]
-	   └─ Sets a new main build from your build list.
-	  $newhw
-	   └─ Initiate a new-hardware conversation with the bot.
-	  $pcpp [url] [style] [escape]
-	   └─ Convert a pcpartpicker.com link into markdown parts. Available styles: normal...
-	  $rawhw [user] [build]
-	   └─ Lists the raw markdown for either the user's default build - or the passed bu...
-	  $renhw [build]
-	   └─ Renames a build from your build list.
-	  $sethwchannel [channel]
-	   └─ Sets the channel for hardware (admin only).
+	   └─ IÌ‰ sÌ°hÍ¨oÌ¹uÌ³lÍªdÍ† rÍˆÍ�eÍ“Ì¬aÍ“ÍœlÍ¨ÌˆlÌ‡Ì˜yÌ¡ÍŸ hÍšÍ†aÌµÍ¢vÍ�Í‘eÍ¦Ì“ iÍ‹Ì•Ì�nÌµÌ°Í¤sÍ–ÌŸÌŸtÍ¤Í”Ì‰aÌŒÍ�Í“lÌ±ÌªÍ¨lÍ’Ì‚Ì¦e...
 
 	Invite Cog (1 command) - Invite.py Extension:
 	  $invite
@@ -493,14 +407,6 @@ A list of cogs, commands, and descriptions:
 	  $madlibs
 	   └─ Let's play MadLibs!
 
-	Morse Cog (3 commands) - Morse.py Extension:
-	  $morse [content]
-	   └─ Converts ascii to morse code.  Accepts a-z and 0-9.  Each letter is comprised...
-	  $morsetable [num_per_row]
-	   └─ Prints out the morse code lookup table.
-	  $unmorse [content]
-	   └─ Converts morse code to ascii.  Each letter is comprised of "-" or "." and sep...
-
 	Music Cog (21 commands) - Example.py Extension:
 	  $join [channel]
 	   └─ Joins a voice channel.
@@ -549,10 +455,6 @@ A list of cogs, commands, and descriptions:
 	  $remindoffline [yes_no]
 	   └─ Sets whether to inform users that pinged members are offline or not.
 
-	Plist Cog (1 command) - Plist.py Extension:
-	  $plist [url]
-	   └─ Validates plist file structure.  Accepts a url - or picks the first attachment.
-
 	Printer Cog (2 commands) - Printer.py Extension:
 	  $print [url]
 	   └─ DOT MATRIX.  Accepts a url - or picks the first attachment.
@@ -588,68 +490,6 @@ A list of cogs, commands, and descriptions:
 	RateLimit Cog (1 command) - RateLimit.py Extension:
 	  $ccooldown [delay]
 	   └─ Sets the cooldown in seconds between each command (owner only).
-
-	Reddit Cog (30 commands) - Reddit.py Extension:
-	  $abandoned
-	   └─ Get something abandoned to look at.
-	  $answer
-	   └─ Spout out some interstellar answering... ?
-	  $aww
-	   └─ Whenever you're down - uppify.
-	  $battlestation
-	   └─ Let's look at some pretty stuff.
-	  $brainfart
-	   └─ Spout out some uh... intellectual brilliance...
-	  $cablefail
-	   └─ Might as well be a noose...
-	  $carmod
-	   └─ Marvels of modern engineering.
-	  $dankmeme
-	   └─ Only the dankest.
-	  $dirtyjoke
-	   └─ Let's see if reddit can be dir-... oh... uh.. funny... (bot-admin only)
-	  $dragon
-	   └─ From the past - when great winged beasts soared the skies.
-	  $earthporn
-	   └─ Earth is good.
-	  $joke
-	   └─ Let's see if reddit can be funny...
-	  $lpt
-	   └─ Become a pro - AT LIFE.
-	  $macsetup
-	   └─ Feast your eyes upon these setups.
-	  $meirl
-	   └─ Me in real life.
-	  $nocontext
-	   └─ Spout out some intersexual brilliance.
-	  $nosleep
-	   └─ I hope you're not tired...
-	  $pun
-	   └─ I don't know, don't ask...
-	  $question
-	   └─ Spout out some interstellar questioning... ?
-	  $randomdog
-	   └─ Bark if you know whassup.
-	  $redditimage [subreddit]
-	   └─ Try to grab an image from an image-based subreddit.
-	  $ruser [user_name]
-	   └─ Gets some info on the passed username - attempts to use your username if none...
-	  $shittybattlestation
-	   └─ Let's look at some shitty stuff.
-	  $shittylpt
-	   └─ Your advise is bad, and you should feel bad.
-	  $software
-	   └─ I uh... I wrote it myself.
-	  $starterpack
-	   └─ Starterpacks.
-	  $techsupport
-	   └─ Tech support irl.
-	  $thinkdeep
-	   └─ Spout out some intellectual brilliance.
-	  $wallpaper
-	   └─ Get something pretty to look at.
-	  $withcontext
-	   └─ Spout out some contextual brilliance.
 
 	Remind Cog (3 commands) - Remind.py Extension:
 	  $clearmind [index]
@@ -795,24 +635,6 @@ A list of cogs, commands, and descriptions:
 	  $tags
 	   └─ List all tags in the tags list.
 
-	Telephone Cog (8 commands) - Telephone.py Extension:
-	  $call [number]
-	   └─ Calls the passed number.  Can use *67 to hide your identity - or *69 to conne...
-	  $phonebook [look_up]
-	   └─ Displays up to 20 entries in the phone book - or optionally lets you search f...
-	  $settelechannel [channel]
-	   └─ Sets the channel for telephone commands - or disables that if nothing is pass...
-	  $teleblock [guild_name]
-	   └─ Blocks all tele-numbers associated with the passed guild (bot-admin only).
-	  $teleblocks
-	   └─ Lists guilds with blocked tele-numbers.
-	  $telechannel
-	   └─ Prints the current channel for telephone commands.
-	  $telenumber
-	   └─ Prints your telephone number.
-	  $teleunblock [guild_name]
-	   └─ Unblocks all tele-numbers associated with the passed guild (bot-admin only).
-
 	TempRole Cog (9 commands) - TempRole.py Extension:
 	  $addtemprole [role]
 	   └─ Adds a new role to the temp role list (admin only).
@@ -906,10 +728,6 @@ A list of cogs, commands, and descriptions:
 	   └─ Sets the number of votes before the selected role or user is mentioned.  Anyt...
 	  $vktomute [number_of_votes]
 	   └─ Sets the number of votes before a user is muted.  Anything less than 1 will d...
-
-	Weather Cog (1 command) - Weather.py Extension:
-	  $forecast [city_name]
-	   └─ Gets some weather.
 
 	Welcome Cog (7 commands) - Welcome.py Extension:
 	  $rawgoodbye [member]

@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 cls
 echo   ###                ###
-echo  # CorpBot - CorpNewt #
+echo  # Beembot           #
 echo ###                ###
 echo.
 

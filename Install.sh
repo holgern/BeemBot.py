@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function main () {
-    echo \#\#\# Updating CorpBot \#\#\#
+    echo \#\#\# Updating BeemBot \#\#\#
     # Check for some linux
     if [[ "$(uname)" == "Linux"  && "$ignorepkg" != 1 ]]; then
         # Check what Linux we're on

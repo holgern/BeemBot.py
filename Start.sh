@@ -29,7 +29,7 @@ function check_py () {
 }
 
 function main () {
-    echo \#\#\# Starting CorpBot \#\#\#
+    echo \#\#\# Starting BeemBot \#\#\#
     cd "$DIR"
     py_path="$(check_py)"
     if [[ "$py_path" == "" ]]; then

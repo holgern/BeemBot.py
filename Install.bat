@@ -37,7 +37,7 @@ exit /B
 
 cls
 echo   ###                ###
-echo  # CorpBot - CorpNewt #
+echo  # BeemBot            #
 echo ###                ###
 echo.
 
