@@ -44,13 +44,7 @@ class Beem:
     async def account(self, ctx, *, account : str = None):
         """Retuns information about an account"""
         if account is None:
-            guild = ctx.message.guild
-            if guild is None:
-                guild = namedtuple("guild", "id")
-                servers = list(self.settings.getServerDict()["Servers"].keys())
-                if len(servers) == 1:
-                    guild.id = servers[0]             
-            regAccount = self.settings.getUserStat(ctx.message.author, guild, "SteemAccount")
+            regAccount = self.settings.getUserStat(ctx.message.author, ctx.message.guild, "SteemAccount")
             if regAccount is not None and regAccount != "":
                 account = regAccount
             else:
