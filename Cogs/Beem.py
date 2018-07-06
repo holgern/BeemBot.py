@@ -14,6 +14,21 @@ from beem import Steem
 from beem.account import Account
 from beem.comment import Comment
 from beem.nodelist import NodeList
+from beem.amount import Amount
+from beem.price import Price
+from beem.market import Market
+from beem.block import Block
+from beem.profile import Profile
+from beem.wallet import Wallet
+from beem.steemconnect import SteemConnect
+from beem.asset import Asset
+from beem.witness import Witness, WitnessesRankedByVote, WitnessesVotedByAccount
+from beem.blockchain import Blockchain
+from beem.utils import formatTimeString, construct_authorperm
+from beem.vote import AccountVotes, ActiveVotes
+from beem import exceptions
+from beem.version import version as __version__
+from beem.asciichart import AsciiChart
 
 def setup(bot):
     # Add the bot and deps
