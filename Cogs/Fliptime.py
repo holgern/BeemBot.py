@@ -33,7 +33,7 @@ class Fliptime:
                     # Get the role that corresponds to the id
                     if str(aRole['ID']) == str(role.id):
                         isAdmin = True
-        return isAdmin    
+        return isAdmin
 
     async def message_edit(self, before_message, message):
         # Pipe the edit into our message func to respond if needed

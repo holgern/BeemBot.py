@@ -87,6 +87,32 @@ class Beem:
         await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
+    async def pricehistory(self, ctx):
+        """Retuns information about the current steem price"""
+
+        feed_history = self.stm.get_feed_history()
+        current_base = Amount(feed_history['current_median_history']["base"], steem_instance=self.stm)
+        current_quote = Amount(feed_history['current_median_history']["quote"], steem_instance=self.stm)
+        price_history = feed_history["price_history"]
+        price = []
+        for h in price_history:
+            base = Amount(h["base"], steem_instance=self.stm)
+            quote = Amount(h["quote"], steem_instance=self.stm)
+            price.append(base.amount / quote.amount)
+        # charset = u'ascii'
+        charset = u'utf8'
+        chart = AsciiChart(height=30, width=30, offset=4, placeholder='{:6.2f} $', charset=charset)
+        response = "Price history for STEEM (median price %4.2f $)\n" % (float(current_base) / float(current_quote))
+    
+        chart.adapt_on_series(price)
+        chart.new_chart()
+        chart.add_axis()
+        chart._draw_h_line(chart._map_y(float(current_base) / float(current_quote)), 1, int(chart.n / chart.skip), line=chart.char_set["curve_hl_dot"])
+        chart.add_curve(price)
+        response += str(chart)
+        await ctx.channel.send("```" + response + "```")
+
+    @commands.command(pass_context=True)
     async def curation(self, ctx, *, authorperm : str):
 
         show_all_voter = False

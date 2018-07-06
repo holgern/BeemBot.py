@@ -24,6 +24,18 @@ class BotAdmin:
         self.settings = settings
         self.muter = muter
 
+    def _is_admin(self, member, channel, guild):
+        # Check for admin/bot-admin
+        isAdmin = member.permissions_in(channel).administrator
+        if not isAdmin:
+            checkAdmin = self.settings.getServerStat(guild, "AdminArray")
+            for role in member.roles:
+                for aRole in checkAdmin:
+                    # Get the role that corresponds to the id
+                    if str(aRole['ID']) == str(role.id):
+                        isAdmin = True
+        return isAdmin
+
     def suppressed(self, guild, msg):
         # Check if we're suppressing @here and @everyone mentions
         if self.settings.getServerStat(guild, "SuppressMentions"):
@@ -180,14 +192,7 @@ class BotAdmin:
             return
 
         # Check if member is admin or bot admin
-        isAdmin = member.permissions_in(ctx.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.guild, "AdminArray")
-            for role in member.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
+        isAdmin = self._is_admin(member, ctx.channel, ctx.guild)
         # Only allow admins to change server stats
         if isAdmin:
             await ctx.channel.send('You can\'t mute other admins or bot-admins.')
@@ -242,15 +247,8 @@ class BotAdmin:
             suppress = True
         else:
             suppress = False
+        isAdmin = self._is_admin(ctx.message.author, ctx.message.channel, ctx.message.guild)
 
-        isAdmin = ctx.message.author.permissions_in(ctx.message.channel).administrator
-        if not isAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in ctx.message.author.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isAdmin = True
         # Only allow admins to change server stats
         if not isAdmin:
             await ctx.channel.send('You do not have sufficient privileges to access this command.')
@@ -493,14 +491,7 @@ class BotAdmin:
             return
 
         # Check if the targeted user is admin
-        isTAdmin = member.permissions_in(ctx.message.channel).administrator
-        if not isTAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in member.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isTAdmin = True
+        isTAdmin = self._is_admin(member, ctx.message.channel, ctx.message.guild)
 
         # Can't kick other admins
         if isTAdmin:
@@ -566,14 +557,7 @@ class BotAdmin:
             return
 
         # Check if the targeted user is admin
-        isTAdmin = member.permissions_in(ctx.message.channel).administrator
-        if not isTAdmin:
-            checkAdmin = self.settings.getServerStat(ctx.message.guild, "AdminArray")
-            for role in member.roles:
-                for aRole in checkAdmin:
-                    # Get the role that corresponds to the id
-                    if str(aRole['ID']) == str(role.id):
-                        isTAdmin = True
+        isTAdmin = self._is_admin(member, ctx.message.channel, ctx.message.guild)
 
         # Can't ban other admins
         if isTAdmin:
