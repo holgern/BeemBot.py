@@ -125,9 +125,7 @@ class Beem:
         chart._draw_h_line(chart._map_y(float(current_base) / float(current_quote)), 1, int(chart.n / chart.skip), line=chart.char_set["curve_hl_dot"])
         chart.add_curve(price)
         response += str(chart)
-        m = Message.Embed("```" + response + "```")
-        m.force_pm = True
-        await m.send(ctx)
+        await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
     async def curation(self, ctx, *, authorperm : str):
