@@ -102,7 +102,7 @@ class Beem:
         await ctx.channel.send("```" + response + "```")
 
     @commands.command(pass_context=True)
-    async def pricehistory(self, ctx):
+    async def pricehistory(self, ctx, width : int = 75):
         """Retuns information about the current steem price"""
 
         feed_history = self.stm.get_feed_history()
@@ -116,7 +116,7 @@ class Beem:
             price.append(base.amount / quote.amount)
         # charset = u'ascii'
         charset = u'utf8'
-        chart = AsciiChart(height=10, width=75, offset=4, placeholder='{:6.2f} $', charset=charset)
+        chart = AsciiChart(height=10, width=width, offset=4, placeholder='{:6.2f} $', charset=charset)
         response = "Price history for STEEM (median price %4.2f $)\n" % (float(current_base) / float(current_quote))
     
         chart.adapt_on_series(price)
